@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">ShoppingReminder</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_add_new_place_type">Add new</string>
+    <string name="action_delete_all_place_types">Delete all</string>
+
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_list_place_types">List of place types</string>
+    <string name="title_activity_edit_place_type">EditPlaceTypeActivity</string>
+    <string name="title_activity_edit_place">EditPlaceActivity</string>
+</resources>
