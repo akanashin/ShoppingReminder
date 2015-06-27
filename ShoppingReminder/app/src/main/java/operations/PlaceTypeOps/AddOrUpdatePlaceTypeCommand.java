@@ -16,9 +16,9 @@ import utils.datatypes.PlaceType;
 public class AddOrUpdatePlaceTypeCommand
         extends AsyncOperationBase<Void> {
 
-    private PlaceType mData; // data to store into DB
+    private PlaceType[] mData; // data to store into DB
 
-    public AddOrUpdatePlaceTypeCommand(Operations ops, PlaceType data, AsyncOpCallback cb) {
+    public AddOrUpdatePlaceTypeCommand(Operations ops, PlaceType[] data, AsyncOpCallback cb) {
         super(ops, cb);
 
         mData = data;
@@ -28,19 +28,21 @@ public class AddOrUpdatePlaceTypeCommand
     public Void doOperation(ContentResolver cr) {
         // Perform a synchronous (blocking) operation on the
         // DataProvider.
-        ContentValues cv = new ContentValues();
+        for (PlaceType pType : mData) {
+            ContentValues cv = new ContentValues();
 
-        cv.put(DatabaseContract.Table_PlaceType.COLUMN_NAME, mData.name);
-        cv.put(DatabaseContract.Table_PlaceType.COLUMN_COLOR, mData.color);
+            cv.put(DatabaseContract.Table_PlaceType.COLUMN_NAME, pType.name);
+            cv.put(DatabaseContract.Table_PlaceType.COLUMN_COLOR, pType.color);
 
-        if (mData.id > 0) {
-            cr.update(Commons.ContentProvider.URI_TABLE_PLACE_TYPE,
-                    cv,
-                    DatabaseContract.Table_PlaceType.COLUMN_ID + "=" + String.format("%d", mData.id),
-                    null
-            );
-        } else
-            cr.insert(Commons.ContentProvider.URI_TABLE_PLACE_TYPE, cv);
+            if (pType.id > 0) {
+                cr.update(Commons.ContentProvider.URI_TABLE_PLACE_TYPE,
+                        cv,
+                        DatabaseContract.Table_PlaceType.COLUMN_ID + "=" + String.format("%d", pType.id),
+                        null
+                );
+            } else
+                cr.insert(Commons.ContentProvider.URI_TABLE_PLACE_TYPE, cv);
+        }
 
         return null;
     }

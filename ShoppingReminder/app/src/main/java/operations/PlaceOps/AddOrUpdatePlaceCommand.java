@@ -10,6 +10,7 @@ import utils.AsyncOperationBase;
 import utils.Commons;
 import utils.async_stuff.AsyncOpCallback;
 import utils.database.DatabaseContract;
+import utils.database.Field;
 import utils.datatypes.PlaceData;
 import utils.datatypes.PlaceType;
 
@@ -19,9 +20,9 @@ import utils.datatypes.PlaceType;
 public class AddOrUpdatePlaceCommand
         extends AsyncOperationBase<Void> {
 
-    private PlaceData mData; // data to store into DB
+    private PlaceData[] mData; // data to store into DB
 
-    public AddOrUpdatePlaceCommand(Operations ops, PlaceData data, AsyncOpCallback cb) {
+    public AddOrUpdatePlaceCommand(Operations ops, PlaceData[] data, AsyncOpCallback cb) {
         super(ops, cb);
 
         mData = data;
@@ -29,51 +30,37 @@ public class AddOrUpdatePlaceCommand
 
     @Override
     public Void doOperation(ContentResolver cr) {
+        for (PlaceData place: mData) {
+            if (place.id == 0) {
+                // new place
+                ContentValues cv = new ContentValues();
 
-        // 1st: store place
-        //  here we get UID of Place
-        if (mData.id == 0) {
-            // new place
-            ContentValues cv = new ContentValues();
+                cv.put(DatabaseContract.Table_Place.COLUMN_NAME, place.name);
+                cv.put(DatabaseContract.Table_Place.COLUMN_LAT,  place.loc.latitude);
+                cv.put(DatabaseContract.Table_Place.COLUMN_LONG, place.loc.longitude);
 
-            cv.put(DatabaseContract.Table_Place.COLUMN_NAME, mData.name);
-            cv.put(DatabaseContract.Table_Place.COLUMN_LAT,  mData.loc.latitude);
-            cv.put(DatabaseContract.Table_Place.COLUMN_LONG, mData.loc.longitude);
+                // after adding i get URI (last part of this Uri is ID of newly added row)
+                place.id = Integer.parseInt(
+                        cr.insert(Commons.ContentProvider.URI_TABLE_PLACE, cv).getLastPathSegment()
+                );
+            } else {
+                // modifying existing one
+                // delete place-type links
+            }
 
-            // after adding i get URI
-            Uri row_uri = cr.insert(Commons.ContentProvider.URI_TABLE_PLACE, cv);
+            // set types for this place ID
+            ContentValues[] ptCv = new ContentValues[place.types.size()];
 
-            // using URI to get ID of newly added place
-            String[] projection = { DatabaseContract.View_Place.COLUMN_ID };
-            Cursor cursor = cr.query(row_uri,
-                    projection,
-                    null, // construct WHERE
-                    null,
-                    DatabaseContract.Table_PlaceType.COLUMN_NAME // ordered by name
-            );
+            for (int i = 0; i < place.types.size(); i++) {
+                ptCv[i] = new ContentValues();
+                ptCv[i].put(DatabaseContract.Table_PlaceTypeLink.COLUMN_PLACE_ID, place.id);
+                ptCv[i].put(DatabaseContract.Table_PlaceTypeLink.COLUMN_TYPE_ID,  place.types.get(i).id);
+            }
 
-
-        } else {
-            // modifying existing one
+            if (cr.bulkInsert(Commons.ContentProvider.URI_TABLE_PLACE_TYPE_LINK, ptCv) != place.types.size())
+                throw new AssertionError("Error inserting place-type links: number of inserted rows != number of types");
         }
-/*
-        // 2nd: store types
-        //  we already have Place ID, so now we remove old type links and create new ones
 
-        ContentValues cv = new ContentValues();
-
-        cv.put(DatabaseContract.Table_PlaceType.COLUMN_NAME, mData.name);
-        cv.put(DatabaseContract.Table_PlaceType.COLUMN_COLOR, mData.color);
-
-        if (mData.id > 0) {
-            cr.update(Commons.ContentProvider.URI_TABLE_PLACE_TYPE,
-                    cv,
-                    DatabaseContract.Table_PlaceType.COLUMN_ID + "=" + String.format("%d", mData.id),
-                    null
-            );
-        } else
-            cr.insert(Commons.ContentProvider.URI_TABLE_PLACE_TYPE, cv);
-*/
         return null;
     }
 }

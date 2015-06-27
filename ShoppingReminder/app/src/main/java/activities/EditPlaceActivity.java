@@ -12,8 +12,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.util.ArrayList;
 
 import home.akanashin.shoppingreminder.R;
@@ -60,11 +58,10 @@ public class EditPlaceActivity
             // disable 'delete' button
             findViewById(R.id.btnDelete).setEnabled(false);
 
-            mPlace = new PlaceData();
-            mPlace.id = 0;
-            mPlace.loc = new LatLng(intent.getDoubleExtra(INTENT_ID_LAT, 0),
-                    intent.getDoubleExtra(INTENT_ID_LONG, 0));
-            mPlace.types = new ArrayList<>();
+            mPlace = new PlaceData("",
+                    intent.getDoubleExtra(INTENT_ID_LAT, 0), intent.getDoubleExtra(INTENT_ID_LONG, 0),
+                    new ArrayList<PlaceType>()
+            );
 
             setupTypesListView();
         } else {
@@ -177,7 +174,7 @@ public class EditPlaceActivity
 
         // place types are already in place
 
-        getOps().place().addOrModify(mPlace, new AsyncOpCallback<Void>() {
+        getOps().place().addOrModify(new PlaceData[] {mPlace}, new AsyncOpCallback<Void>() {
             @Override
             public void run(Void v) {
                 setResult(RESULT_OK);

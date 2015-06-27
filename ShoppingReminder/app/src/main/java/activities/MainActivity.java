@@ -2,19 +2,28 @@ package activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import home.akanashin.shoppingreminder.R;
+import operations.Operations;
+import utils.async_stuff.AsyncOpCallback;
+import utils.async_stuff.GenericActivity;
+import utils.database.DatabaseHelper;
+import utils.datatypes.PlaceData;
+import utils.datatypes.PlaceType;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends GenericActivity<Operations> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState, Operations.class);
+
         setContentView(R.layout.activity_main);
     }
 
@@ -45,8 +54,41 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onBtnEditPlaceTypes(View v) {
+    public void onBtnEditPlaceTypesClick(View v) {
         Intent intent = new Intent(this, ListPlaceTypesActivity.class);
         startActivity(intent);
     }
+
+    public void onBtnInitDBClick(View v) {
+        //checkPlaceTypes();
+    }
+
+
+    private void checkPlaces(final PlaceType[] pTypes) {
+        // here we fill places
+
+        PlaceData[] places = new PlaceData[] {
+                new PlaceData("P Green", 1.0, 1.0, new ArrayList<PlaceType>() {{ add(pTypes[0]);}}),
+                new PlaceData("P Blue", 1.1, 1.3, new ArrayList<PlaceType>() {{ add(pTypes[2]);}}),
+                new PlaceData("P Green + Red", 2.0, 1.0, new ArrayList<PlaceType>() {{ add(pTypes[0]);add(pTypes[1]);}})
+        };
+
+        getOps().place().addOrModify(places, new AsyncOpCallback<Void>() {
+            @Override
+            public void run(Void param) {
+                // check result here
+
+                getOps().place().query(0, new AsyncOpCallback<PlaceData[]>() {
+                    @Override
+                    public void run(PlaceData[] param) {
+                        // validate
+                        Toast.makeText(MainActivity.this, "Success!", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+            }
+        });
+
+    }
 }
+

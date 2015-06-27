@@ -27,6 +27,16 @@
         android:layout_below="@+id/btnEditPlaces"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:onClick="onBtnEditPlaceTypes" />
+        android:onClick="onBtnEditPlaceTypesClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Init DB"
+        android:id="@+id/btnInitDB"
+        android:layout_below="@+id/btnPlacesTypes"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onBtnInitDBClick" />
 
 </RelativeLayout>

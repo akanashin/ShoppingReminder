@@ -86,8 +86,7 @@ public class ListPlaceTypesActivity extends GenericActivity<Operations> {
             return true;
         }
         if (id == R.id.action_add_new_place_type) {
-            PlaceType placeType = new PlaceType();
-            placeType.id = 0;
+            PlaceType placeType = new PlaceType(0, "", 0);
             AddOrEditPlaceType(placeType);
 
             return true;

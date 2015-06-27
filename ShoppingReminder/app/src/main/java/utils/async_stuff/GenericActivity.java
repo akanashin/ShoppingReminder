@@ -99,8 +99,7 @@ public class GenericActivity<OpsType extends ConfigurableOps>
             else
                 // Inform it that the runtime configuration change has
                 // completed.
-                mOpsInstance.onConfiguration(this,
-                                             false);
+                mOpsInstance.onConfiguration(false);
         }
     }
 
@@ -120,8 +119,7 @@ public class GenericActivity<OpsType extends ConfigurableOps>
                                      mOpsInstance);
 
         // Perform the first initialization.
-        mOpsInstance.onConfiguration(this,
-                                     true);
+        mOpsInstance.onConfiguration(true);
     }
 
     /**

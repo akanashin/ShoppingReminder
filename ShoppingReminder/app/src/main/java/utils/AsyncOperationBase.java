@@ -16,7 +16,7 @@ public abstract class AsyncOperationBase<ReturnType>
 
     protected Operations mOps;
     private GenericAsyncTask mAsyncTask;
-    private AsyncOpCallback  mCb; //callback to be called when
+    private AsyncOpCallback mCb; //callback to be called when
 
     public AsyncOperationBase(Operations ops, AsyncOpCallback cb) {
         mOps = ops;
@@ -32,7 +32,7 @@ public abstract class AsyncOperationBase<ReturnType>
     @Override
     public ReturnType doInBackground(Void param) {
         return doOperation
-                (mOps.getActivity().getApplicationContext().getContentResolver());
+                (MyApp.getContext().getContentResolver());
     }
 
     @Override

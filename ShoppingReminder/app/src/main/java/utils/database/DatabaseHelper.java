@@ -28,11 +28,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.w(DatabaseHelper.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
+
         // drop all tables
         for(String cmd : DatabaseContract.SQL_DESTROYS)
             sqLiteDatabase.execSQL(cmd);
 
         // recreate all the tables
         onCreate(sqLiteDatabase);
+    }
+
+    public void clearDB() {
+        Log.w(DatabaseHelper.class.getName(), "Recreating database");
+
+        // drop all tables
+        for(String cmd : DatabaseContract.SQL_DESTROYS)
+            getWritableDatabase().execSQL(cmd);
+
+        // recreate all the tables
+        onCreate(getWritableDatabase());
     }
 }

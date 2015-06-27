@@ -1,6 +1,5 @@
 package operations;
 
-import android.app.Activity;
 import android.util.Log;
 
 import operations.PlaceOps.AddOrUpdatePlaceCommand;
@@ -20,7 +19,6 @@ import utils.datatypes.PlaceType;
  * Created by akana_000 on 6/19/2015.
  */
 public class Operations implements ConfigurableOps {
-    private Activity     mActivity;
     private PlaceTypeOps mPlaceTypeOps;
     private PlaceOps     mPlaceOps;
 
@@ -30,10 +28,9 @@ public class Operations implements ConfigurableOps {
      * firstTimeIn - flag indicates that this is first time (we need to initialization)
      */
     @Override
-    public void onConfiguration(Activity activity, boolean firstTimeIn) {
+    public void onConfiguration(boolean firstTimeIn) {
         Log.d(Commons.TAG, "onConfiguration called: firstTimeIn=" + firstTimeIn);
 
-        mActivity = activity;
         mPlaceTypeOps = this.new PlaceTypeOps();
         mPlaceOps     = this.new PlaceOps();
     }
@@ -43,12 +40,6 @@ public class Operations implements ConfigurableOps {
      */
     public PlaceTypeOps placeType() { return mPlaceTypeOps; }
     public PlaceOps     place()     { return mPlaceOps; }
-
-
-
-    public Activity getActivity() {
-        return mActivity;
-    }
 
     /*
      * Operations for Place Types
@@ -68,7 +59,7 @@ public class Operations implements ConfigurableOps {
         }
 
         // add new place type
-        public void addOrModify(PlaceType data, AsyncOpCallback cb) {
+        public void addOrModify(PlaceType[] data, AsyncOpCallback cb) {
             Log.d(Commons.TAG, "PlaceTypeOps.addOrModify requested");
 
             new AddOrUpdatePlaceTypeCommand(Operations.this, data, cb).run();
@@ -110,7 +101,7 @@ public class Operations implements ConfigurableOps {
         }
 
         // add new or modify existing place
-        public void addOrModify(PlaceData data, AsyncOpCallback cb) {
+        public void addOrModify(PlaceData[] data, AsyncOpCallback cb) {
             Log.d(Commons.TAG, "PlaceType.addOrModify requested");
 
             new AddOrUpdatePlaceCommand(Operations.this, data, cb).run();

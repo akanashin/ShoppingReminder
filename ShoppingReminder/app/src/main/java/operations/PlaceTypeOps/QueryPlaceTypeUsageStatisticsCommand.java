@@ -26,7 +26,7 @@ public class QueryPlaceTypeUsageStatisticsCommand
     @Override
     public PlaceType.Usage doOperation(ContentResolver cr) {
         //ToDo: IMPLEMENT!!!
-        PlaceType data = new PlaceType();
+        PlaceType data = new PlaceType("", 0);
         PlaceType.Usage udata = data.new Usage();
         udata.n_places = 0;
         udata.n_tasks = 0;

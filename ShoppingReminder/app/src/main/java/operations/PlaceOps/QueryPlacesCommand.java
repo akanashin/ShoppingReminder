@@ -86,22 +86,13 @@ public class QueryPlacesCommand
                         && al.get(al.size() - 1).id == id)
                     place = al.get(al.size() - 1);
                 else {
-                    place = new PlaceData();
-                    place.id = id;
-                    place.name  = fName.getString();
-                    place.loc   = new LatLng(fLat.getDouble(), fLong.getDouble());
-                    place.types = new ArrayList<>();
+                    place = new PlaceData(id, fName.getString(), fLat.getDouble(), fLong.getDouble(), new ArrayList<PlaceType>());
 
                     al.add(place);
                 }
 
                 // fill types into place
-                PlaceType placeType = new PlaceType();
-                placeType.id    = fTypeID.getInteger();
-                placeType.name  = fTypeName.getString();
-                placeType.color = fTypeColor.getInteger();
-
-                place.types.add(placeType);
+                place.types.add(new PlaceType(fTypeID.getInteger(), fTypeName.getString(), fTypeColor.getInteger()));
             } while (cursor.moveToNext());
         } else
             Log.w(Commons.TAG, "Found nothing!");

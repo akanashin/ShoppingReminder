@@ -107,13 +107,17 @@ public class MySQLDataProvider extends ContentProvider {
         Uri resultUri;
 
         switch (URI.mMatcher.match(uri)) {
+            case URI.PLACE:
+                table = DatabaseContract.Table_Place.TABLE_NAME;
+                resultUri = Commons.ContentProvider.URI_TABLE_PLACE;
+                break;
             case URI.PLACE_TYPE:
                 table = DatabaseContract.Table_PlaceType.TABLE_NAME;
                 resultUri = Commons.ContentProvider.URI_TABLE_PLACE_TYPE;
                 break;
-            case URI.PLACE:
-                table = DatabaseContract.Table_Place.TABLE_NAME;
-                resultUri = Commons.ContentProvider.URI_TABLE_PLACE;
+            case URI.PLACE_TYPE_LINK:
+                table = DatabaseContract.Table_PlaceTypeLink.TABLE_NAME;
+                resultUri = Commons.ContentProvider.URI_TABLE_PLACE_TYPE_LINK;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown or illegal URI: " + uri);

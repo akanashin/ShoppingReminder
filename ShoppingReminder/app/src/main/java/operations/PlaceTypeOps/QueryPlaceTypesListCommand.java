@@ -11,11 +11,9 @@ import utils.AsyncOperationBase;
 import utils.Commons;
 import utils.async_stuff.AsyncOpCallback;
 import utils.database.DatabaseContract;
+import utils.database.Field;
 import utils.datatypes.PlaceType;
 
-/**
- * Created by akana_000 on 6/20/2015.
- */
 public class QueryPlaceTypesListCommand
         extends AsyncOperationBase<PlaceType[]>
 {
@@ -44,14 +42,19 @@ public class QueryPlaceTypesListCommand
         ArrayList<PlaceType> al = new ArrayList<>();
         if (cursor != null
                 && cursor.moveToFirst()) {
+            // prepare field readers
+            Field
+                    fID     = new Field(cursor, DatabaseContract.Table_PlaceType.COLUMN_ID),
+                    fName   = new Field(cursor, DatabaseContract.Table_PlaceType.COLUMN_NAME),
+                    fColor  =  new Field(cursor, DatabaseContract.Table_PlaceType.COLUMN_COLOR);
+
             // iterate over rows and read every row
             do {
-                PlaceType placeType = new PlaceType();
-                placeType.id    = cursor.getInt(cursor.getColumnIndex(DatabaseContract.Table_PlaceType.COLUMN_ID));
-                placeType.name  = cursor.getString(cursor.getColumnIndex(DatabaseContract.Table_PlaceType.COLUMN_NAME));
-                placeType.color = cursor.getInt(cursor.getColumnIndex(DatabaseContract.Table_PlaceType.COLUMN_COLOR));
-
-                al.add(placeType);
+                al.add(new PlaceType(
+                        fID.getInteger(),
+                        fName.getString(),
+                        fColor.getInteger()
+                ));
             } while (cursor.moveToNext());
         } else
             Log.w(Commons.TAG, "Found nothing!");

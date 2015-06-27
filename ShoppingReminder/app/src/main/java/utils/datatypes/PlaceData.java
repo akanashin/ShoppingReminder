@@ -26,4 +26,33 @@ public class PlaceData {
         return false;
     }
 
+    public PlaceData(String aName, Double aLat, Double aLong, ArrayList<PlaceType> aTypes) {
+        id    = 0; // this constructor always creates new object which does not have database ID
+        name  = aName;
+        loc   = new LatLng(aLat, aLong);
+        types = aTypes;
+    }
+    public PlaceData(Integer aId, String aName, Double aLat, Double aLong, ArrayList<PlaceType> aTypes) {
+        id    = aId;
+        name  = aName;
+        loc   = new LatLng(aLat, aLong);
+        types = aTypes;
+    }
+
+    /**
+     * Comparator of two PlaceData objects
+     *  do not compare IDs
+     * @param object
+     * @return
+     */
+    public boolean equals(Object object) {
+        if(!(object instanceof PlaceData))
+            return false;
+
+        //
+        if (loc != null && !loc.equals(((PlaceData) object).loc) )
+            return false;
+
+        return true;
+    }
 }

@@ -162,13 +162,10 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
      * Store newly created or edited item
      */
     public void onOkButtonClick(View v) {
-        // store newly creater data into database and notify caller activity
-        PlaceType placeType = new PlaceType();
-        placeType.id = mUid;
-        placeType.name = mNameEditor.getText().toString();
-        placeType.color = mColor;
-
-        getOps().placeType().addOrModify(placeType, new AsyncOpCallback<Void>() {
+        // store newly created data into database and notify caller activity
+        getOps().placeType().addOrModify(
+                new PlaceType[] {new PlaceType(mUid, mNameEditor.getText().toString(), mColor)},
+                new AsyncOpCallback<Void>() {
             @Override
             public void run(Void v) {
                 setResult(RESULT_OK);

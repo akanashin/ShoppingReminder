@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import home.akanashin.shoppingreminder.R;
@@ -28,6 +29,7 @@ import utils.Commons;
 import utils.async_stuff.AsyncOpCallback;
 import utils.async_stuff.GenericActivity;
 import utils.datatypes.PlaceData;
+import utils.datatypes.PlaceType;
 
 
 public class ShowPlacesActivity extends GenericActivity<Operations>
@@ -164,10 +166,7 @@ public class ShowPlacesActivity extends GenericActivity<Operations>
     public void onMapClick(LatLng point) {
         Log.d(Commons.TAG, "Map clicked!");
 
-        PlaceData place = new PlaceData();
-        place.id = 0; // new Place
-        place.loc = point;
-        modifyPlace(place);
+        modifyPlace(new PlaceData("New place", point.latitude, point.longitude, new ArrayList<PlaceType>()));
     }
 
     @Override
