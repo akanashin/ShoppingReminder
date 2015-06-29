@@ -12,8 +12,8 @@ public class PlaceType {
 
     // this class is just a storage for returning usage statistics for this type
     public class Usage {
-        public Integer n_places;
-        public Integer n_tasks;
+        public int n_places;
+        public int n_tasks;
     }
 
 

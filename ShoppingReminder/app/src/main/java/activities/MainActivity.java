@@ -58,37 +58,5 @@ public class MainActivity extends GenericActivity<Operations> {
         Intent intent = new Intent(this, ListPlaceTypesActivity.class);
         startActivity(intent);
     }
-
-    public void onBtnInitDBClick(View v) {
-        //checkPlaceTypes();
-    }
-
-
-    private void checkPlaces(final PlaceType[] pTypes) {
-        // here we fill places
-
-        PlaceData[] places = new PlaceData[] {
-                new PlaceData("P Green", 1.0, 1.0, new ArrayList<PlaceType>() {{ add(pTypes[0]);}}),
-                new PlaceData("P Blue", 1.1, 1.3, new ArrayList<PlaceType>() {{ add(pTypes[2]);}}),
-                new PlaceData("P Green + Red", 2.0, 1.0, new ArrayList<PlaceType>() {{ add(pTypes[0]);add(pTypes[1]);}})
-        };
-
-        getOps().place().addOrModify(places, new AsyncOpCallback<Void>() {
-            @Override
-            public void run(Void param) {
-                // check result here
-
-                getOps().place().query(0, new AsyncOpCallback<PlaceData[]>() {
-                    @Override
-                    public void run(PlaceData[] param) {
-                        // validate
-                        Toast.makeText(MainActivity.this, "Success!", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-            }
-        });
-
-    }
 }
 

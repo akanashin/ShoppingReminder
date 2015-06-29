@@ -5,6 +5,7 @@ import android.test.AndroidTestCase;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
+import operations.CommandSyncer;
 import operations.Operations;
 import utils.async_stuff.AsyncOpCallback;
 import utils.database.DatabaseHelper;
@@ -130,65 +131,36 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
      *
      * @param places
      */
-    private void insertOrModifyToDB(PlaceType[] places) {
-        final CountDownLatch signal = new CountDownLatch(1);
-
-        mOps.placeType().addOrModify(places, new AsyncOpCallback<Void>() {
+    private void insertOrModifyToDB(final PlaceType[] places) {
+        new CommandSyncer<Void>() {
             @Override
-            public void run(Void param) {
-                signal.countDown();
+            public void exec() {
+                mOps.placeType().addOrModify(places, this);
             }
-        });
-
-        try {
-            signal.await();// wait for callback
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        }.doStuff();
     }
 
     /**
      * Synchronous wrapper over querying the database
      */
     private PlaceType[] queryFromDB() {
-        final CountDownLatch signal = new CountDownLatch(1);
-        final ArrayList<PlaceType[]> result = new ArrayList<>(1);
-
-        mOps.placeType().queryList(new AsyncOpCallback<PlaceType[]>() {
+        return new CommandSyncer<PlaceType[]>() {
             @Override
-            public void run(PlaceType[] param) {
-                result.add(param);
-                signal.countDown();
+            public void exec() {
+                mOps.placeType().queryList(this);
             }
-        });
-
-        try {
-            signal.await();// wait for callback
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return result.get(0);
+        }.doStuff();
     }
 
     /**
      * Synchronous wrapper over deleting from database
      */
-    private void deleteFromDB(int id) {
-        final CountDownLatch signal = new CountDownLatch(1);
-
-        mOps.placeType().delete(id, new AsyncOpCallback<Void>() {
+    private void deleteFromDB(final int id) {
+        new CommandSyncer<Void>() {
             @Override
-            public void run(Void v) {
-                signal.countDown();
+            public void exec() {
+                mOps.placeType().delete(id, this);
             }
-        });
-
-        try {
-            signal.await();// wait for callback
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        }.doStuff();
     }
-
 }

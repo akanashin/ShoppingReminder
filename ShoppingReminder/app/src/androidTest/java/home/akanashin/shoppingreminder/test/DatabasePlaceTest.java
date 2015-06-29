@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
 import operations.Operations;
+import operations.CommandSyncer;
 import utils.async_stuff.AsyncOpCallback;
 import utils.database.DatabaseHelper;
 import utils.datatypes.PlaceData;
@@ -155,6 +156,26 @@ public class DatabasePlaceTest extends AndroidTestCase {
     }
 
     /**
+     * Test for Usage Statistics of PlaceType
+     * (i do testing here because test needs PlaceData which is not present in DatabasePlaceTypeTest)
+     * (i don't test number of tasks - it will be done in another test module)
+     */
+    public void testUsageStatisticsForPlaceType() {
+        prepare();
+
+        // 1st: check usage statistics - it should be 0/0
+        PlaceType.Usage usage = queryPlaceTypesUsage(1);
+        assertEquals(0, usage.n_places);
+
+        // 2st: fill database with some data
+        insertOrModifyToDB(mPlaces);
+
+        // 3rd: check usage statistics - it should be not empty
+        usage = queryPlaceTypesUsage(1);
+        assertEquals(2, usage.n_places);
+    }
+
+    /**
      * Prepare database
      */
     private void prepare() {
@@ -189,109 +210,73 @@ public class DatabasePlaceTest extends AndroidTestCase {
      *
      * @param places
      */
-    private void insertOrModifyToDB(PlaceData[] places) {
-        final CountDownLatch signal = new CountDownLatch(1);
-
-        mOps.place().addOrModify(places, new AsyncOpCallback<Void>() {
+    private void insertOrModifyToDB(final PlaceData[] places) {
+        new CommandSyncer<Void>() {
             @Override
-            public void run(Void param) {
-                signal.countDown();
+            public void exec() {
+                mOps.place().addOrModify(places, this);
             }
-        });
-
-        try {
-            signal.await();// wait for callback
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        }.doStuff();
     }
 
     /**
      * Synchronous wrapper over querying the database
      */
     private PlaceData[] queryFromDB() {
-        final CountDownLatch signal = new CountDownLatch(1);
-        final ArrayList<PlaceData[]> result = new ArrayList<>(1);
-
-        mOps.place().queryList(new AsyncOpCallback<PlaceData[]>() {
+        return new CommandSyncer<PlaceData[]>() {
             @Override
-            public void run(PlaceData[] param) {
-                result.add(param);
-                signal.countDown();
+            public void exec() {
+                mOps.place().queryList(this);
             }
-        });
-
-        try {
-            signal.await();// wait for callback
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return result.get(0);
+        }.doStuff();
     }
 
     /**
      * Synchronous wrapper over adding PlaceTypes to database
      */
     private void writePlaceTypesToDB() {
-        final CountDownLatch signal = new CountDownLatch(1);
-
-        mOps.placeType().addOrModify(mTypes, new AsyncOpCallback<Void>() {
+        new CommandSyncer<Void>() {
             @Override
-            public void run(Void param) {
-                signal.countDown();
+            public void exec() {
+                mOps.placeType().addOrModify(mTypes, this);
             }
-        });
-
-        try {
-            signal.await();// wait for callback
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        }.doStuff();
     }
 
     /**
      * Synchronous wrapper over querying the database
      */
     private PlaceType[] queryPlaceTypesFromDB() {
-        final CountDownLatch signal = new CountDownLatch(1);
-        final ArrayList<PlaceType[]> result = new ArrayList<>(1);
-
-        mOps.placeType().queryList(new AsyncOpCallback<PlaceType[]>() {
+        return new CommandSyncer<PlaceType[]>() {
             @Override
-            public void run(PlaceType[] param) {
-                result.add(param);
-                signal.countDown();
+            public void exec() {
+                mOps.placeType().queryList(this);
             }
-        });
-
-        try {
-            signal.await();// wait for callback
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return result.get(0);
+        }.doStuff();
     }
 
     /**
      * Synchronous wrapper over deleting from database
      */
-    private void deleteFromDB(int id) {
-        final CountDownLatch signal = new CountDownLatch(1);
-
-        mOps.place().delete(id, new AsyncOpCallback<Void>() {
+    private void deleteFromDB(final int id) {
+        new CommandSyncer<Void>() {
             @Override
-            public void run(Void v) {
-                signal.countDown();
+            public void exec() {
+                mOps.place().delete(id, this);
             }
-        });
+        }.doStuff();
+    }
 
-        try {
-            signal.await();// wait for callback
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    /**
+     * Synchronous getter of usage information for PlaceType
+     */
+    private PlaceType.Usage queryPlaceTypesUsage(final int id) {
+        return new CommandSyncer<PlaceType.Usage>() {
+            @Override
+            public void exec() {
+                mOps.placeType().queryUsageStatistics(id, this);
+            }
+        }.doStuff();
     }
 
 }

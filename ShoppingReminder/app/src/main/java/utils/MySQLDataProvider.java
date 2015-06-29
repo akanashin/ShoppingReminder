@@ -157,11 +157,11 @@ public class MySQLDataProvider extends ContentProvider {
             case URI.PLACE_TYPE:
                 queryBuilder.setTables(DatabaseContract.Table_PlaceType.TABLE_NAME);
                 break;
-            case URI.PLACE_TYPE_LINK_ID:
-                queryBuilder.appendWhere(DatabaseContract.Table_PlaceTypeLink.COLUMN_ID + "=" + uri.getLastPathSegment());
             case URI.PLACE_TYPE_LINK:
                 queryBuilder.setTables(DatabaseContract.Table_PlaceTypeLink.TABLE_NAME);
                 break;
+            case URI.PLACE_TYPE_LINK_ID:
+                throw new IllegalArgumentException("Querying URI " + uri + " does not make sense (it must be error)");
             default:
                 throw new IllegalArgumentException("Unknown or illegal URI: " + uri);
         }
