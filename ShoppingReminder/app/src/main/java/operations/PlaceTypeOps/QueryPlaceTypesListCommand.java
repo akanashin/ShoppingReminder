@@ -7,7 +7,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import operations.Operations;
-import utils.AsyncOperationBase;
+import utils.async_stuff.GenericAsyncOperation;
 import utils.Commons;
 import utils.async_stuff.AsyncOpCallback;
 import utils.database.DatabaseContract;
@@ -15,7 +15,7 @@ import utils.database.Field;
 import utils.datatypes.PlaceType;
 
 public class QueryPlaceTypesListCommand
-        extends AsyncOperationBase<PlaceType[]>
+        extends GenericAsyncOperation<PlaceType[]>
 {
     public QueryPlaceTypesListCommand(Operations ops, AsyncOpCallback cb) {
         super(ops, cb);

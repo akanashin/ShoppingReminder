@@ -1,24 +1,21 @@
-package utils;
+package utils.async_stuff;
 
 import android.content.ContentResolver;
 
 import operations.Operations;
-import utils.async_stuff.AsyncOpCallback;
-import utils.async_stuff.GenericAsyncTask;
-import utils.async_stuff.GenericAsyncTaskOps;
+import utils.MyApp;
 
 /**
  * Base of async operation
  * Needs to be implemented using doOperation
  */
-public abstract class AsyncOperationBase<ReturnType>
-        implements GenericAsyncTaskOps<Void, Void, ReturnType> {
+public abstract class GenericAsyncOperation<ReturnType> {
 
     protected Operations mOps;
     private GenericAsyncTask mAsyncTask;
     private AsyncOpCallback mCb; //callback to be called when
 
-    public AsyncOperationBase(Operations ops, AsyncOpCallback cb) {
+    public GenericAsyncOperation(Operations ops, AsyncOpCallback cb) {
         mOps = ops;
         mAsyncTask = new GenericAsyncTask<>(this);
         mCb = cb;
@@ -29,14 +26,12 @@ public abstract class AsyncOperationBase<ReturnType>
         mAsyncTask.execute((Void) null);
     }
 
-    @Override
-    public ReturnType doInBackground(Void param) {
+    public ReturnType doInBackground() {
         return doOperation
                 (MyApp.getContext().getContentResolver());
     }
 
-    @Override
-    public void onPostExecute(ReturnType uid, Void param) {
+    public void onPostExecute(ReturnType uid) {
         mCb.run(uid);
     }
 

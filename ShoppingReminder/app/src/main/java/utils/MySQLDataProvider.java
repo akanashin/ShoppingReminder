@@ -157,6 +157,8 @@ public class MySQLDataProvider extends ContentProvider {
             case URI.PLACE_TYPE:
                 queryBuilder.setTables(DatabaseContract.Table_PlaceType.TABLE_NAME);
                 break;
+            case URI.PLACE_TYPE_LINK_ID:
+                queryBuilder.appendWhere(DatabaseContract.Table_PlaceTypeLink.COLUMN_ID + "=" + uri.getLastPathSegment());
             case URI.PLACE_TYPE_LINK:
                 queryBuilder.setTables(DatabaseContract.Table_PlaceTypeLink.TABLE_NAME);
                 break;
@@ -188,6 +190,9 @@ public class MySQLDataProvider extends ContentProvider {
             case URI.PLACE_TYPE:
                 table = DatabaseContract.Table_PlaceType.TABLE_NAME;
                 break;
+            case URI.PLACE:
+                table = DatabaseContract.Table_Place.TABLE_NAME;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -205,7 +210,7 @@ public class MySQLDataProvider extends ContentProvider {
     }
 
     /**
-     * Get all table Details from teh sqlite_master table in Db.
+     * Get all table Details from the sqlite_master table in Db.
      *
      * @return An ArrayList of table details.
      */

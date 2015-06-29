@@ -3,7 +3,7 @@ package operations.PlaceTypeOps;
 import android.content.ContentResolver;
 
 import operations.Operations;
-import utils.AsyncOperationBase;
+import utils.async_stuff.GenericAsyncOperation;
 import utils.Commons;
 import utils.async_stuff.AsyncOpCallback;
 import utils.database.DatabaseContract;
@@ -12,7 +12,7 @@ import utils.database.DatabaseContract;
  * Created by akana_000 on 6/20/2015.
  */
 public class DeletePlaceTypeCommand
-        extends AsyncOperationBase<Void> {
+        extends GenericAsyncOperation<Void> {
 
     private Integer mUid; // ID of item to delete
 

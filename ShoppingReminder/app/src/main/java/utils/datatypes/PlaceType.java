@@ -36,7 +36,10 @@ public class PlaceType {
      * @return true if objects are equal
      * @params two objects
      */
-    public boolean equals(PlaceType pt2) {
+    public boolean equals(Object pt2) {
+        if(!(pt2 instanceof PlaceType))
+            throw new ClassCastException("Object is not PlaceType");
+
         // auto false (this object is NOT null)
         if (pt2 == null)
             return false;
@@ -48,8 +51,8 @@ public class PlaceType {
         // now we know that pt2 is not null
         //  compare this and pt2 field by field
         //  (ignoring ID)
-        return compare(name, pt2.name)
-                && compare(color, pt2.color);
+        return compare(name, ((PlaceType)pt2).name)
+                && compare(color, ((PlaceType) pt2).color);
     }
 
 }

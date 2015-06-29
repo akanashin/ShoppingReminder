@@ -9,7 +9,7 @@ import android.os.AsyncTask;
 public class GenericAsyncTask<Params,
                               Progress,
                               Result, 
-                              Ops extends GenericAsyncTaskOps<Params, Progress, Result>>
+                              Ops extends GenericAsyncOperation<Result>>
       extends AsyncTask<Params, Progress, Result> {
     /**
      * Debugging tag used by the Android logger.
@@ -40,14 +40,13 @@ public class GenericAsyncTask<Params,
     protected Result doInBackground(Params... params) {
         mParam = params[0];
 
-        return mOps.doInBackground(mParam);
+        return mOps.doInBackground();
     }
 
     /**
      * Process results in the UI Thread.
      */
     protected void onPostExecute(Result result) {
-        mOps.onPostExecute(result,
-                           mParam);
+        mOps.onPostExecute(result);
     }
 }

@@ -5,12 +5,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.util.ArrayList;
 
 import operations.Operations;
-import utils.AsyncOperationBase;
+import utils.async_stuff.GenericAsyncOperation;
 import utils.Commons;
 import utils.async_stuff.AsyncOpCallback;
 import utils.database.DatabaseContract;
@@ -22,7 +20,7 @@ import utils.datatypes.PlaceType;
  * Created by akana_000 on 6/20/2015.
  */
 public class QueryPlacesCommand
-        extends AsyncOperationBase<PlaceData[]>
+        extends GenericAsyncOperation<PlaceData[]>
 {
     private Integer mUid = 0; // query all places by default
 
@@ -68,10 +66,10 @@ public class QueryPlacesCommand
         {
             // first: create fields
             Field
-                    fID     = new Field(cursor, DatabaseContract.View_Place.COLUMN_ID),
-                    fName   = new Field(cursor, DatabaseContract.View_Place.COLUMN_NAME),
-                    fLat    =  new Field(cursor, DatabaseContract.View_Place.COLUMN_LAT),
-                    fLong   =  new Field(cursor, DatabaseContract.View_Place.COLUMN_LONG),
+                    fID        =  new Field(cursor, DatabaseContract.View_Place.COLUMN_ID),
+                    fName      =  new Field(cursor, DatabaseContract.View_Place.COLUMN_NAME),
+                    fLat       =  new Field(cursor, DatabaseContract.View_Place.COLUMN_LAT),
+                    fLong      =  new Field(cursor, DatabaseContract.View_Place.COLUMN_LONG),
                     fTypeID    =  new Field(cursor, DatabaseContract.View_Place.COLUMN_TYPE_ID),
                     fTypeName  =  new Field(cursor, DatabaseContract.View_Place.COLUMN_TYPE_NAME),
                     fTypeColor =  new Field(cursor, DatabaseContract.View_Place.COLUMN_TYPE_COLOR);

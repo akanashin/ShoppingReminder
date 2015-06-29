@@ -72,26 +72,24 @@ public final class DatabaseContract {
         public static String COLUMN_TYPE_COLOR = "type_color";
 
         // SQL staff
-        public static String SQL_CREATE = String.format(
-                "CREATE VIEW %s AS" +
-                        " SELECT p.%s as %s, p.%s as %s, p.%s as %s, p.%s as %s, pl.%s as %s, pl.%s as %s, pl.%s as %s" +
-                        " FROM %s AS p, %s AS pl, %s AS l" +
-                        " WHERE p.%s=l.%s AND l.%s=pl.%s",
-                TABLE_NAME,
-                // SELECT and column names
-                Table_Place.COLUMN_ID,     COLUMN_ID,
-                Table_Place.COLUMN_NAME,   COLUMN_NAME,
-                Table_Place.COLUMN_LAT,    COLUMN_LAT,
-                Table_Place.COLUMN_LONG,   COLUMN_LONG,
-                Table_PlaceType.COLUMN_ID,    COLUMN_TYPE_ID,
-                Table_PlaceType.COLUMN_NAME,  COLUMN_TYPE_NAME,
-                Table_PlaceType.COLUMN_COLOR, COLUMN_TYPE_COLOR,
-                // FROM
-                Table_Place.TABLE_NAME, Table_PlaceType.TABLE_NAME, Table_PlaceTypeLink.TABLE_NAME,
-                // WHERE
-                Table_Place.COLUMN_ID, Table_PlaceTypeLink.COLUMN_ID,
-                Table_PlaceTypeLink.COLUMN_ID, Table_PlaceType.COLUMN_ID
-        );
+        public static String SQL_CREATE =
+                "CREATE VIEW " + TABLE_NAME + " AS" +
+
+                " SELECT p."    + Table_Place.COLUMN_ID +        " as " + COLUMN_ID +
+                        ", p."  + Table_Place.COLUMN_NAME +      " as " + COLUMN_NAME +
+                        ", p."  + Table_Place.COLUMN_LAT +       " as " + COLUMN_LAT +
+                        ", p."  + Table_Place.COLUMN_LONG +      " as " + COLUMN_LONG +
+                        ", pt." + Table_PlaceType.COLUMN_ID +    " as " + COLUMN_TYPE_ID +
+                        ", pt." + Table_PlaceType.COLUMN_NAME +  " as " + COLUMN_TYPE_NAME +
+                        ", pt." + Table_PlaceType.COLUMN_COLOR + " as " + COLUMN_TYPE_COLOR +
+
+                " FROM " + Table_Place.TABLE_NAME +         " AS p, " +
+                           Table_PlaceType.TABLE_NAME +     " AS pt, " +
+                           Table_PlaceTypeLink.TABLE_NAME + " AS ptl" +
+
+                " WHERE p." + Table_Place.COLUMN_ID + "=ptl." + Table_PlaceTypeLink.COLUMN_PLACE_ID +
+                      " AND ptl." + Table_PlaceTypeLink.COLUMN_TYPE_ID + "=pt." + Table_PlaceType.COLUMN_ID;
+
 
         public static String SQL_DESTROY = "DROP VIEW IF EXISTS " + TABLE_NAME;
     }

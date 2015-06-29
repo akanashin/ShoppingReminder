@@ -51,7 +51,7 @@ public class Operations implements ConfigurableOps {
             new QueryPlaceTypesListCommand(Operations.this, cb).run();
         }
 
-        // searches for usage of a given palce
+        // searches for usage of a given place
         public void queryUsageStatistics(int uid, AsyncOpCallback cb) {
             Log.d(Commons.TAG, "PlaceTypeOps.queryUsageStatistics requested");
 

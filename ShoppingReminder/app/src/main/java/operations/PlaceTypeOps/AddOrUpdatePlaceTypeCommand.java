@@ -4,7 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 
 import operations.Operations;
-import utils.AsyncOperationBase;
+import utils.async_stuff.GenericAsyncOperation;
 import utils.Commons;
 import utils.async_stuff.AsyncOpCallback;
 import utils.database.DatabaseContract;
@@ -14,7 +14,7 @@ import utils.datatypes.PlaceType;
  * Created by akana_000 on 6/20/2015.
  */
 public class AddOrUpdatePlaceTypeCommand
-        extends AsyncOperationBase<Void> {
+        extends GenericAsyncOperation<Void> {
 
     private PlaceType[] mData; // data to store into DB
 

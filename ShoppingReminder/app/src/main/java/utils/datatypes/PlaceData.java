@@ -4,6 +4,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
+import static utils.Utils.compare;
+
 /**
  * Created by akana_000 on 6/19/2015.
  */
@@ -47,12 +49,14 @@ public class PlaceData {
      */
     public boolean equals(Object object) {
         if(!(object instanceof PlaceData))
+            throw new ClassCastException("Object is not PlaceData");
+
+        // check location
+        if ( !compare(loc,((PlaceData) object).loc)
+          || !compare(name,((PlaceData) object).name) )
             return false;
 
-        //
-        if (loc != null && !loc.equals(((PlaceData) object).loc) )
-            return false;
-
-        return true;
+        // check types
+        return types.equals(((PlaceData) object).types);
     }
 }
