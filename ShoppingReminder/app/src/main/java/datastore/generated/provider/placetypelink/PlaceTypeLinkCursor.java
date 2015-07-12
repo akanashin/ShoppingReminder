@@ -4,12 +4,15 @@
  */
 package datastore.generated.provider.placetypelink;
 
+import java.util.Date;
+
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import datastore.generated.provider.base.AbstractCursor;
-import datastore.generated.provider.places.PlacesColumns;
-import datastore.generated.provider.placetypes.PlaceTypesColumns;
+import datastore.generated.provider.places.*;
+import datastore.generated.provider.placetypes.*;
 
 /**
  * Cursor wrapper for the {@code place_type_link} table.

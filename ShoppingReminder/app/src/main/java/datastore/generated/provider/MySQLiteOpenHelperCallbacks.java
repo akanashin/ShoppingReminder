@@ -6,6 +6,7 @@ package datastore.generated.provider;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
 import android.util.Log;
 
 import home.akanashin.shoppingreminder.BuildConfig;

@@ -2,8 +2,9 @@ package home.akanashin.shoppingreminder.test;
 
 import android.test.AndroidTestCase;
 
-import operations.CommandSyncer;
+import home.akanashin.shoppingreminder.test.utils.Utils;
 import operations.Operations;
+import operations.PlaceTypeOps;
 import utils.datatypes.PlaceType;
 
 /**
@@ -17,6 +18,7 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
     };
 
     private Operations mOps;
+    private Utils<PlaceType[], PlaceTypeOps> mUtils;
 
     @Override
     public void setUp() throws Exception {
@@ -24,6 +26,8 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
 
         mOps = new Operations();
         mOps.onConfiguration(true); // initialization of operations
+
+        mUtils = new Utils<>(mOps.placeType());
     }
 
     @Override
@@ -31,17 +35,18 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
         super.tearDown();
     }
 
-    // adding and checking
+    /**
+     * Test for adding and checking
+     */
     public void testAdd() {
-        clearDB();
+        mUtils.clearDB();
 
         // 1st: fill database
-        insertOrModifyToDB(mTypes);
+        mUtils.checkedInsertOrModify(mTypes.length, "", mTypes);
 
         // 2nd: query database
-        PlaceType[] data = queryFromDB();
+        PlaceType[] data = mUtils.checkedQuery();
 
-        // checking place types
         assertEquals(mTypes.length, data.length);
 
         for (int i = 0; i < mTypes.length; i++) {
@@ -55,16 +60,31 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
     }
 
     /**
+     *  Test for adding type with already existing name
+     *  (should produce error!)
+     */
+    public void testAddException() {
+        mUtils.clearDB();
+
+        // 1st: fill database
+        mUtils.checkedInsertOrModify(mTypes.length, "", mTypes);
+
+        // 2nd: try to put one more type into database
+        PlaceType newType = new PlaceType(mTypes[0].name, mTypes[0].color + 10);
+        mUtils.checkedInsertOrModify(null, "column note is not unique (code 19)", new PlaceType[]{newType});
+    }
+
+    /**
      * Test for modifying existing element
      */
     public void testModify() {
-        clearDB();
+        mUtils.clearDB();
 
         // 1st: fill database
-        insertOrModifyToDB(mTypes);
+        mUtils.checkedInsertOrModify(mTypes.length, "", mTypes);
 
         // 2nd: query database
-        PlaceType[] data = queryFromDB();
+        PlaceType[] data = mUtils.checkedQuery();
 
         // Nb: i don't check whether i read data successfully or not
         //  this is done in another test
@@ -75,10 +95,10 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
         data[1].name  = data[1].name + " changed";
 
         // 3rd: modify data in database
-        insertOrModifyToDB(new PlaceType[]{data[1]});
+        mUtils.checkedInsertOrModify(1, "", new PlaceType[]{data[1]});
 
         // 4th: requery and validate data
-        PlaceType[] newData = queryFromDB();
+        PlaceType[] newData = mUtils.checkedQuery();
         assertEquals(data.length, newData.length);
 
         // all elements should be equal
@@ -94,75 +114,26 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
      * Test for deleting element
      */
     public void testDelete() {
-        clearDB();
+        mUtils.clearDB();
 
         // 1st: fill database
-        insertOrModifyToDB(mTypes);
+        mUtils.checkedInsertOrModify(mTypes.length, "", mTypes);
 
         // 2nd: query database
-        PlaceType[] data = queryFromDB();
+        PlaceType[] data = mUtils.checkedQuery();
 
         // Nb: i don't check whether i read data successfully or not
         //  this is done in another test
         long id    = data[1].id;
 
         // 3rd: delete from database
-        deleteFromDB(id);
+        mUtils.deleteFromDB(id);
 
         // 4th: requery and validate data
         //  check that we haven't received element with ID we deleted
-        data = queryFromDB();
+        data = mUtils.checkedQuery();
+
         for(PlaceType pt: data)
             assertFalse(pt.id == id);
-    }
-
-    /**
-     * Synchronous wrapper over adding to database
-     *
-     * @param places
-     */
-    private void insertOrModifyToDB(final PlaceType[] places) {
-        new CommandSyncer<Void>() {
-            @Override
-            public void exec() {
-                mOps.placeType().addOrModify(places, this);
-            }
-        }.doStuff();
-    }
-
-    /**
-     * Synchronous wrapper over querying the database
-     */
-    private PlaceType[] queryFromDB() {
-        return new CommandSyncer<PlaceType[]>() {
-            @Override
-            public void exec() {
-                mOps.placeType().queryList(this);
-            }
-        }.doStuff();
-    }
-
-    /**
-     * Synchronous wrapper over deleting from database
-     */
-    private void deleteFromDB(final long id) {
-        new CommandSyncer<Void>() {
-            @Override
-            public void exec() {
-                mOps.placeType().delete(id, this);
-            }
-        }.doStuff();
-    }
-
-    /**
-     * Synchronous wrapper over clearing database
-     */
-    private void clearDB() {
-        new CommandSyncer<Void>() {
-            @Override
-            public void exec() {
-                mOps.clearDB(this);
-            }
-        }.doStuff();
     }
 }

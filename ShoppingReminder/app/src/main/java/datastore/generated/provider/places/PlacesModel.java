@@ -4,9 +4,12 @@
  */
 package datastore.generated.provider.places;
 
-import android.support.annotation.NonNull;
-
 import datastore.generated.provider.base.BaseModel;
+
+import java.util.Date;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Places

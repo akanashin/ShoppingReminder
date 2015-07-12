@@ -4,8 +4,11 @@
  */
 package datastore.generated.provider.placetypelink;
 
+import java.util.Date;
+
 import android.content.ContentResolver;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import datastore.generated.provider.base.AbstractContentValues;

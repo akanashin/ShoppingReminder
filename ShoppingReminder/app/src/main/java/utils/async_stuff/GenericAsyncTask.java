@@ -2,29 +2,27 @@ package utils.async_stuff;
 
 import android.os.AsyncTask;
 
+import utils.datatypes.Result;
+
 /**
  * Defines a generic framework for running an AsyncTask that delegates
  * its operations to the @a Ops parameter.
  */
 public class GenericAsyncTask<Params,
                               Progress,
-                              Result, 
-                              Ops extends GenericAsyncOperation<Result>>
-      extends AsyncTask<Params, Progress, Result> {
-    /**
-     * Debugging tag used by the Android logger.
-     */
-    protected final String TAG = getClass().getSimpleName();
-    
-    /**
-     * Params instance.
-     */
-    private Params mParam;
+                              ResultType,
+                              Ops extends DatabaseOperation<ResultType>>
+      extends AsyncTask<Params, Progress, ResultType> {
 
     /**
      * Reference to the enclosing Ops object.
      */
     protected Ops mOps;
+
+    /**
+     * Result of operation
+     */
+    private Result<ResultType> mResult = null;
 
     /**
      * Constructor initializes the field.
@@ -37,16 +35,15 @@ public class GenericAsyncTask<Params,
      * Run in a background thread to avoid blocking the UI thread.
      */
     @SuppressWarnings("unchecked")
-    protected Result doInBackground(Params... params) {
-        mParam = params[0];
-
-        return mOps.doInBackground();
+    protected ResultType doInBackground(Params... params) {
+        mResult = mOps.doInBackground(); //store result to return it in onPostExecute
+        return mResult.result;
     }
 
     /**
      * Process results in the UI Thread.
      */
-    protected void onPostExecute(Result result) {
-        mOps.onPostExecute(result);
+    protected void onPostExecute(ResultType result) {
+        mOps.onPostExecute(mResult);
     }
 }

@@ -4,6 +4,8 @@
  */
 package datastore.generated.provider.places;
 
+import java.util.Date;
+
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.support.annotation.NonNull;

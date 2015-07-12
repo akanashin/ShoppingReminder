@@ -12,46 +12,49 @@ import datastore.generated.provider.placetypes.PlaceTypesCursor;
 import datastore.generated.provider.placetypes.PlaceTypesSelection;
 import utils.Commons;
 import utils.async_stuff.AsyncOpCallback;
-import utils.async_stuff.GenericAsyncOperation;
+import utils.async_stuff.DatabaseOperation;
 import utils.datatypes.PlaceType;
 
 /**
  * Created by akana_000 on 7/12/2015.
  */
-public class PlaceTypeOps {
+public class PlaceTypeOps implements OpsInterface<PlaceType[]> {
 
     public void queryList(AsyncOpCallback cb) {
         Log.d(Commons.TAG, "PlaceTypeOps.queryList requested");
 
-        new GenericAsyncOperation<PlaceType[]>(cb) {
+        new DatabaseOperation<PlaceType[]>(cb) {
             @Override
             public PlaceType[] doOperation(ContentResolver cr) {
+                ArrayList<PlaceType> result = new ArrayList<>();
                 PlaceTypesSelection where = new PlaceTypesSelection();
                 PlaceTypesCursor placeTypeCursor = where.query(cr);
 
-                ArrayList<PlaceType> al = new ArrayList<>();
-                while(placeTypeCursor.moveToNext()) {
-                    al.add(new PlaceType(
+                while (placeTypeCursor.moveToNext()) {
+                    result.add(new PlaceType(
                             placeTypeCursor.getId(),
                             placeTypeCursor.getNote(),
                             placeTypeCursor.getColor()));
                 }
 
-                if (al.isEmpty())
-                    Log.w(Commons.TAG, "Found nothing!");
-
-                return al.toArray(new PlaceType[0]);
+                return result.toArray(new PlaceType[0]);
             }
         }.run();
+    }
+
+    @Override
+    public void query(long uid, AsyncOpCallback cb) {
+        throw new AssertionError("Not implemented");
     }
 
     // searches for usage of a given place type
     public void queryUsageStatistics(final long uid, AsyncOpCallback cb) {
         Log.d(Commons.TAG, "PlaceTypeOps.queryUsageStatistics requested");
 
-        new GenericAsyncOperation<PlaceType.Usage>(cb) {
+        new DatabaseOperation<PlaceType.Usage>(cb) {
             @Override
             public PlaceType.Usage doOperation(ContentResolver cr) {
+
                 PlaceTypeLinkSelection sel = new PlaceTypeLinkSelection();
                 PlaceTypeLinkCursor cursor = sel.placeTypeId(uid).query(cr);
 
@@ -69,21 +72,27 @@ public class PlaceTypeOps {
     public void addOrModify(final PlaceType[] data, AsyncOpCallback cb) {
         Log.d(Commons.TAG, "PlaceTypeOps.addOrModify requested");
 
-        new GenericAsyncOperation<Void>(cb) {
+        new DatabaseOperation<Integer>(cb) {
             @Override
-            public Void doOperation(ContentResolver cr) {
-                for(PlaceType placeType: data) {
+            public Integer doOperation(ContentResolver cr) {
+                int updated = 0;
+                for (PlaceType placeType : data) {
                     PlaceTypesContentValues cv = new PlaceTypesContentValues();
                     cv.putNote(placeType.name);
                     cv.putColor(placeType.color);
 
-                    if(placeType.id == 0)
+                    if (placeType.id == 0) {
                         cv.insert(cr);
-                    else
-                        cv.update(cr, new PlaceTypesSelection().id(placeType.id));
+                        updated++;
+                    } else {
+                        updated += cv.update(cr, new PlaceTypesSelection().id(placeType.id));
+                    }
                 }
 
-                return null;
+                if (updated != data.length)
+                    Log.w(Commons.TAG, "AddOrUpdate operation: not all data was properly processed!");
+
+                return updated;
             }
         }.run();
     }
@@ -93,13 +102,12 @@ public class PlaceTypeOps {
     public void delete(final long uid, AsyncOpCallback cb) {
         Log.d(Commons.TAG, "PlaceTypeOps.delete requested");
 
-        new GenericAsyncOperation<Void>(cb) {
+        new DatabaseOperation<Integer>(cb) {
             @Override
-            public Void doOperation(ContentResolver cr) {
+            public Integer doOperation(ContentResolver cr) {
                 PlaceTypesSelection where = new PlaceTypesSelection();
-                where.id(uid).delete(cr);
 
-                return null;
+                return where.id(uid).delete(cr);
             }
         }.run();
     }

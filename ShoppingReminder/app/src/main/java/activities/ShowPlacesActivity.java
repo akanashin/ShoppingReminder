@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -73,8 +74,11 @@ public class ShowPlacesActivity extends GenericActivity<Operations>
             }
         }
 
-        if (mMap == null)
-            throw new AssertionError("mMap is null");
+        if (mMap == null) {
+            Toast.makeText(this, "Sorry. For some reason map cannot be used here", Toast.LENGTH_LONG).show();
+            //throw new AssertionError("mMap is empty");
+            finish();
+        }
     }
 
     private void reloadPlaces() {

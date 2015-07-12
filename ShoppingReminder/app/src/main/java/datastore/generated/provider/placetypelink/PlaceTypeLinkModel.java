@@ -6,6 +6,11 @@ package datastore.generated.provider.placetypelink;
 
 import datastore.generated.provider.base.BaseModel;
 
+import java.util.Date;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 /**
  * Entity joining places and types many-to-many
  */

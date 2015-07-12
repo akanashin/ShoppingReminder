@@ -31,11 +31,10 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
     public static final Integer INTENT_REQUEST_ID = 1;
 
     // these members will be filled in onCreate and used in onOkClick
-    private EditText mNameEditor;
+    private EditText  mNameEditor;
     private ImageView mColorPicker;
 
-    private Integer   mUid;   // this is used to  separate adding and modifying
-    private Integer   mColor; // initial color value or updated color value
+    private PlaceType mPlaceType; // here is the storage for the data we edit
 
     private ColorPickerDialog mColorPicketDialog;
 
@@ -49,8 +48,8 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
         // if UID = 0 this is creating new PlaceType
         //  else we edit existing one
         Intent intent = getIntent();
-        mUid = intent.getIntExtra(INTENT_ID_UID, -1);
-        if (mUid == -1)
+        mPlaceType.id = intent.getLongExtra(INTENT_ID_UID, -1);
+        if (mPlaceType.id == -1)
             throw new AssertionError("No UID was bundled into Intent!");
 
         mNameEditor = (EditText) findViewById(R.id.et_name);
@@ -58,7 +57,7 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
         if (mNameEditor == null || mColorPicker == null)
             throw new AssertionError("Logical error: members 'EditText' and 'ImageView' are zero");
 
-        if (mUid == 0) {
+        if (mPlaceType.id == 0) {
             // creating new place type
             getSupportActionBar().setTitle("New place type");
 
@@ -71,7 +70,7 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
 
             mNameEditor.setText("New place type");
 
-            mColor = Commons.DEFAULT_MARKER_COLOR;
+            mPlaceType.color = Commons.DEFAULT_MARKER_COLOR;
         } else {
             getSupportActionBar().setTitle("Edit place type");
 
@@ -84,8 +83,8 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
             mNameEditor.setText(name);
 
             // set color
-            mColor = intent.getIntExtra(INTENT_ID_COLOR, -1);
-            if (mColor == -1)
+            mPlaceType.color = intent.getIntExtra(INTENT_ID_COLOR, -1);
+            if (mPlaceType.color == -1)
                 throw new AssertionError("No Color was bundled into Intent!");
 
             // these data only needed for filling statistics data
@@ -94,7 +93,7 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
             final View btn_delete = findViewById(R.id.btn_remove);
 
             // request for statistics data
-            getOps().placeType().queryUsageStatistics(mUid, new AsyncOpCallback<PlaceType.Usage>() {
+            getOps().placeType().queryUsageStatistics(mPlaceType.id, new AsyncOpCallback<PlaceType.Usage>() {
                 @Override
                 public void run(PlaceType.Usage param) {
                     tv_places.setText("" + param.n_places);
@@ -107,7 +106,7 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
         }
 
         // set color of marker
-        mColorPicker.setColorFilter(mColor, PorterDuff.Mode.MULTIPLY);
+        mColorPicker.setColorFilter(mPlaceType.color, PorterDuff.Mode.MULTIPLY);
 
         // some hacks to show keyboard when user wants to edit the field
         mNameEditor.setOnClickListener(new View.OnClickListener() {
@@ -121,12 +120,12 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
 
     // handler for changing color
     public void onColorIconClick(View v) {
-        mColorPicketDialog = new ColorPickerDialog(EditPlaceTypeActivity.this, mColor);
+        mColorPicketDialog = new ColorPickerDialog(EditPlaceTypeActivity.this, mPlaceType.color);
         mColorPicketDialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
             @Override
             public void onColorChanged(int color) {
-                mColor = color;
-                mColorPicker.setColorFilter(mColor, PorterDuff.Mode.MULTIPLY);
+                mPlaceType.color = color;
+                mColorPicker.setColorFilter(mPlaceType.color, PorterDuff.Mode.MULTIPLY);
             }
         });
         mColorPicketDialog.show();
@@ -160,14 +159,15 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
      */
     public void onOkButtonClick(View v) {
         // store newly created data into database and notify caller activity
+        mPlaceType.name = mNameEditor.getText().toString();
         getOps().placeType().addOrModify(
-                new PlaceType[] {new PlaceType(mUid, mNameEditor.getText().toString(), mColor)},
+                new PlaceType[] {mPlaceType},
                 new AsyncOpCallback<Void>() {
-            @Override
-            public void run(Void v) {
-                setResult(RESULT_OK);
-                finish();
-            }
+                    @Override
+                    public void run(Void v) {
+                        setResult(RESULT_OK);
+                        finish();
+                    }
         });
     }
 
@@ -185,7 +185,7 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
      * Send command to delete the item
      */
     public void onDeleteButtonClick(View v) {
-        getOps().placeType().delete(mUid, new AsyncOpCallback() {
+        getOps().placeType().delete(mPlaceType.id, new AsyncOpCallback() {
             @Override
             public void run(Object param) {
                 setResult(RESULT_OK);

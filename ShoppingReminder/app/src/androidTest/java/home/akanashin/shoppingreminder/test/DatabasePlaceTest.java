@@ -6,10 +6,13 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
-import operations.CommandSyncer;
+import home.akanashin.shoppingreminder.test.utils.Utils;
 import operations.Operations;
+import operations.PlaceOps;
+import utils.CommandSyncer;
 import utils.datatypes.PlaceData;
 import utils.datatypes.PlaceType;
+import utils.datatypes.Result;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing of database operations with PlaceType</a>
@@ -35,6 +38,7 @@ public class DatabasePlaceTest extends AndroidTestCase {
     };
 
     private Operations mOps;
+    private Utils<PlaceData[], PlaceOps> mUtils;
 
     @Override
     public void setUp() throws Exception {
@@ -42,6 +46,8 @@ public class DatabasePlaceTest extends AndroidTestCase {
 
         mOps = new Operations();
         mOps.onConfiguration(true); // initialization of operations
+
+        mUtils = new Utils<>(mOps.place());
     }
 
     @Override
@@ -54,10 +60,10 @@ public class DatabasePlaceTest extends AndroidTestCase {
         prepare();
 
         // 1st: fill database
-        insertOrModifyToDB(mPlaces);
+        mUtils.checkedInsertOrModify(mPlaces.length, "", mPlaces);
 
         // 2nd: query database
-        PlaceData[] data = queryFromDB();
+        PlaceData[] data = mUtils.checkedQuery();
 
         // checking place types
         assertEquals(mPlaces.length, data.length);
@@ -76,10 +82,10 @@ public class DatabasePlaceTest extends AndroidTestCase {
         prepare();
 
         // 1st: fill database
-        insertOrModifyToDB(mPlaces);
+        mUtils.checkedInsertOrModify(mPlaces.length, "", mPlaces);
 
         // 2nd: query database
-        PlaceData[] data = queryFromDB();
+        PlaceData[] data = mUtils.checkedQuery();
         assertEquals(data.length, mPlaces.length);
 
         assertTrue(data.length > 2); // i will change 2 elements
@@ -93,10 +99,10 @@ public class DatabasePlaceTest extends AndroidTestCase {
         data[1].loc  = new LatLng(data[1].loc.latitude, -5);
 
         // 4rd: write modified values to database
-        insertOrModifyToDB( new PlaceData[] {data[0], data[1]});
+        mUtils.checkedInsertOrModify(2, "", new PlaceData[] {data[0], data[1]});
 
         // 5th: requery new data from database
-        PlaceData[] newdata = queryFromDB();
+        PlaceData[] newdata = mUtils.checkedQuery();
         assertEquals(data.length, newdata.length);
 
         // 6th: validate
@@ -114,15 +120,15 @@ public class DatabasePlaceTest extends AndroidTestCase {
         prepare();
 
         // 1st: fill database
-        insertOrModifyToDB(mPlaces);
+        mUtils.checkedInsertOrModify(mPlaces.length, "", mPlaces);
 
         // 2nd: remove one of places
         final int deletedIndex = 1;
         assertTrue(mPlaces.length >= deletedIndex + 1); // i will delete element 2 (index 1)
-        deleteFromDB(mPlaces[deletedIndex].id);
+        mUtils.verifyResult(1, "", mUtils.deleteFromDB(mPlaces[deletedIndex].id));
 
         // 3rd: requery new data from database
-        PlaceData[] data = queryFromDB();
+        PlaceData[] data = mUtils.checkedQuery();
 
         // 4th: check length of new array
         //      check that every element in new data is present in initial array
@@ -151,11 +157,11 @@ public class DatabasePlaceTest extends AndroidTestCase {
         prepare();
 
         // 1st: check usage statistics - it should be 0/0
-        PlaceType.Usage usage = queryPlaceTypesUsage(mTypes[1].id);
-        assertEquals(0, usage.n_places);
+        Result<PlaceType.Usage> usage = queryPlaceTypesUsage(mTypes[1].id);
+        assertEquals(0, usage.result.n_places);
 
         // 2st: fill database with some data
-        insertOrModifyToDB(mPlaces);
+        mUtils.checkedInsertOrModify(mPlaces.length, "", mPlaces);
 
         // 3rd: check usage statistics - it should be <something>
         usage = queryPlaceTypesUsage(mTypes[1].id);
@@ -165,27 +171,27 @@ public class DatabasePlaceTest extends AndroidTestCase {
                 if (placeType.id == mTypes[1].id)
                     counter++;
 
-        assertEquals(counter, usage.n_places);
+        assertEquals(counter, usage.result.n_places);
     }
 
     /**
      * Prepare database
      */
     private void prepare() {
-        clearDB();
+        mUtils.clearDB();
 
         // create table with PlaceTypes
         writePlaceTypesToDB();
 
         // read PlaceTypes and fix records for Places
         //  NB: i don't check whether data was read correctly or not
-        mTypes = queryPlaceTypesFromDB();
+        Result<PlaceType[]> mTypes = queryPlaceTypesFromDB();
 
         for(PlaceData place: mPlaces)
             for(PlaceType pt: place.types) {
                 // set ID based on name
                 long id = -1;
-                for(PlaceType placeType: mTypes)
+                for(PlaceType placeType: mTypes.result)
                     if (placeType.name.equals(pt.name))
                         id = placeType.id;
 
@@ -198,42 +204,9 @@ public class DatabasePlaceTest extends AndroidTestCase {
     }
 
     /**
-     * Synchronous wrapper over clearing database
+     *  Stuff for PlaceType
+     *   I don't check it because it is checked in another test
      */
-    private void clearDB() {
-        new CommandSyncer<Void>() {
-            @Override
-            public void exec() {
-                mOps.clearDB(this);
-            }
-        }.doStuff();
-    }
-
-    /**
-     * Synchronous wrapper over adding to database
-     *
-     * @param places
-     */
-    private void insertOrModifyToDB(final PlaceData[] places) {
-        new CommandSyncer<Void>() {
-            @Override
-            public void exec() {
-                mOps.place().addOrModify(places, this);
-            }
-        }.doStuff();
-    }
-
-    /**
-     * Synchronous wrapper over querying the database
-     */
-    private PlaceData[] queryFromDB() {
-        return new CommandSyncer<PlaceData[]>() {
-            @Override
-            public void exec() {
-                mOps.place().queryList(this);
-            }
-        }.doStuff();
-    }
 
     /**
      * Synchronous wrapper over adding PlaceTypes to database
@@ -250,8 +223,8 @@ public class DatabasePlaceTest extends AndroidTestCase {
     /**
      * Synchronous wrapper over querying the database
      */
-    private PlaceType[] queryPlaceTypesFromDB() {
-        return new CommandSyncer<PlaceType[]>() {
+    private Result<PlaceType[]> queryPlaceTypesFromDB() {
+        return new CommandSyncer<Result<PlaceType[]>>() {
             @Override
             public void exec() {
                 mOps.placeType().queryList(this);
@@ -260,22 +233,10 @@ public class DatabasePlaceTest extends AndroidTestCase {
     }
 
     /**
-     * Synchronous wrapper over deleting from database
-     */
-    private void deleteFromDB(final long id) {
-        new CommandSyncer<Void>() {
-            @Override
-            public void exec() {
-                mOps.place().delete(id, this);
-            }
-        }.doStuff();
-    }
-
-    /**
      * Synchronous getter of usage information for PlaceType
      */
-    private PlaceType.Usage queryPlaceTypesUsage(final long id) {
-        return new CommandSyncer<PlaceType.Usage>() {
+    private Result<PlaceType.Usage> queryPlaceTypesUsage(final long id) {
+        return new CommandSyncer<Result<PlaceType.Usage>>() {
             @Override
             public void exec() {
                 mOps.placeType().queryUsageStatistics(id, this);

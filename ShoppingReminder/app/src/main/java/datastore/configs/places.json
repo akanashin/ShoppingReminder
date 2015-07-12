@@ -24,7 +24,7 @@
   "constraints": [
     {
       "name": "unique_name",
-      "definition": "UNIQUE (name) ON CONFLICT REPLACE"
+      "definition": "UNIQUE (name) ON CONFLICT ROLLBACK"
     }
   ]
 }

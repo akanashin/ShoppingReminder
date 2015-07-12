@@ -13,10 +13,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.util.Log;
 
-import datastore.generated.provider.places.PlacesColumns;
+import home.akanashin.shoppingreminder.BuildConfig;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkColumns;
 import datastore.generated.provider.placetypes.PlaceTypesColumns;
-import home.akanashin.shoppingreminder.BuildConfig;
+import datastore.generated.provider.places.PlacesColumns;
 
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = MySQLiteOpenHelper.class.getSimpleName();
@@ -43,7 +43,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
             + PlaceTypesColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + PlaceTypesColumns.NOTE + " TEXT NOT NULL, "
             + PlaceTypesColumns.COLOR + " INTEGER NOT NULL "
-            + ", CONSTRAINT unique_name UNIQUE (note) ON CONFLICT REPLACE"
+            + ", CONSTRAINT unique_name UNIQUE (note) ON CONFLICT ROLLBACK"
             + " );";
 
     public static final String SQL_CREATE_TABLE_PLACES = "CREATE TABLE IF NOT EXISTS "
@@ -52,7 +52,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
             + PlacesColumns.NAME + " TEXT NOT NULL, "
             + PlacesColumns.LATITUDE + " REAL NOT NULL, "
             + PlacesColumns.LONGITUDE + " REAL NOT NULL "
-            + ", CONSTRAINT unique_name UNIQUE (name) ON CONFLICT REPLACE"
+            + ", CONSTRAINT unique_name UNIQUE (name) ON CONFLICT ROLLBACK"
             + " );";
 
     // @formatter:on

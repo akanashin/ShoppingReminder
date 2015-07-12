@@ -15,14 +15,14 @@ import datastore.generated.provider.placetypelink.PlaceTypeLinkCursor;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkSelection;
 import utils.Commons;
 import utils.async_stuff.AsyncOpCallback;
-import utils.async_stuff.GenericAsyncOperation;
+import utils.async_stuff.DatabaseOperation;
 import utils.datatypes.PlaceData;
 import utils.datatypes.PlaceType;
 
 /**
  * Created by akana_000 on 7/12/2015.
  */
-public class PlaceOps {
+public class PlaceOps implements OpsInterface<PlaceData[]> {
     public void queryList(AsyncOpCallback cb) {
         Log.d(Commons.TAG, "PlaceOps.queryList requested");
 
@@ -34,7 +34,7 @@ public class PlaceOps {
     public void query(final long uid, AsyncOpCallback cb) {
         Log.d(Commons.TAG, "PlaceOps.query requested");
 
-        new GenericAsyncOperation<PlaceData[]>(cb) {
+        new DatabaseOperation<PlaceData[]>(cb) {
             @Override
             public PlaceData[] doOperation(ContentResolver cr) {
                 return queryHelper(cr, uid);
@@ -51,7 +51,7 @@ public class PlaceOps {
 
         PlaceTypeLinkCursor cursor = sel.query(cr);
 
-        while(cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             // first - read type of place
             PlaceType placeType = new PlaceType(
                     cursor.getPlaceTypeId(),
@@ -60,8 +60,8 @@ public class PlaceOps {
 
             // find object of PlaceData for which this type belongs
             PlaceData placeData = null;
-            for(PlaceData p: arr)
-                if(p.id == cursor.getPlaceId())
+            for (PlaceData p : arr)
+                if (p.id == cursor.getPlaceId())
                     placeData = p;
 
             if (placeData == null) {
@@ -95,17 +95,15 @@ public class PlaceOps {
     public void delete(final long uid, AsyncOpCallback cb) {
         Log.d(Commons.TAG, "PlaceOps.delete requested");
 
-        new GenericAsyncOperation<Void>(cb) {
+        new DatabaseOperation<Integer>(cb) {
             @Override
-            public Void doOperation(ContentResolver cr) {
+            public Integer doOperation(ContentResolver cr) {
                 PlacesSelection where = new PlacesSelection();
 
                 if (uid != -1)
                     where = where.id(uid);
 
-                where.delete(cr);
-
-                return null;
+                return where.delete(cr);
             }
         }.run();
     }
@@ -114,9 +112,9 @@ public class PlaceOps {
     public void addOrModify(final PlaceData[] data, AsyncOpCallback cb) {
         Log.d(Commons.TAG, "PlaceType.addOrModify requested");
 
-        new GenericAsyncOperation<Void>(cb) {
+        new DatabaseOperation<Integer>(cb) {
             @Override
-            public Void doOperation(ContentResolver cr) {
+            public Integer doOperation(ContentResolver cr) {
                 for (PlaceData place : data) {
                     PlacesContentValues place_cv = new PlacesContentValues();
                     place_cv.putName(place.name);
@@ -130,8 +128,7 @@ public class PlaceOps {
                         place.id = Long.parseLong(uri.getLastPathSegment());
 
                         needToWriteLinks = true;
-                    }
-                    else {
+                    } else {
                         // updating the record
 
                         // 1st - get old value of record
@@ -160,7 +157,7 @@ public class PlaceOps {
 
                     // now update PlaceTypeLink table (create all the records)
                     if (needToWriteLinks)
-                        for(PlaceType pt: place.types) {
+                        for (PlaceType pt : place.types) {
                             PlaceTypeLinkContentValues cv = new PlaceTypeLinkContentValues();
 
                             cv.putPlaceId(place.id);
@@ -169,7 +166,7 @@ public class PlaceOps {
                         }
                 }
 
-                return null;
+                return data.length;
             }
         }.run();
     }
