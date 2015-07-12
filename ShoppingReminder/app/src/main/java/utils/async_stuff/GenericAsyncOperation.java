@@ -2,7 +2,6 @@ package utils.async_stuff;
 
 import android.content.ContentResolver;
 
-import operations.Operations;
 import utils.MyApp;
 
 /**

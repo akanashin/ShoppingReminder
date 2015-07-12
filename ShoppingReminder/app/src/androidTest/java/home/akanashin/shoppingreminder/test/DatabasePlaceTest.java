@@ -5,12 +5,9 @@ import android.test.AndroidTestCase;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
 
-import operations.Operations;
 import operations.CommandSyncer;
-import utils.async_stuff.AsyncOpCallback;
-import utils.database.DatabaseHelper;
+import operations.Operations;
 import utils.datatypes.PlaceData;
 import utils.datatypes.PlaceType;
 

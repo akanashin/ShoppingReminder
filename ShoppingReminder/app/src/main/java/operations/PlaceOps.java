@@ -5,10 +5,8 @@ import android.net.Uri;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 
 import datastore.generated.provider.places.PlacesContentValues;
 import datastore.generated.provider.places.PlacesSelection;

@@ -8,9 +8,6 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 import datastore.generated.provider.DataProvider;
-import datastore.generated.provider.placetypelink.PlaceTypeLinkColumns;
-import datastore.generated.provider.placetypes.PlaceTypesColumns;
-import datastore.generated.provider.places.PlacesColumns;
 
 /**
  * Types of places

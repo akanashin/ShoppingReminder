@@ -4,15 +4,13 @@
  */
 package datastore.generated.provider.placetypelink;
 
-import java.util.Date;
-
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 
 import datastore.generated.provider.base.AbstractSelection;
-import datastore.generated.provider.places.*;
-import datastore.generated.provider.placetypes.*;
+import datastore.generated.provider.places.PlacesColumns;
+import datastore.generated.provider.placetypes.PlaceTypesColumns;
 
 /**
  * Selection for the {@code place_type_link} table.

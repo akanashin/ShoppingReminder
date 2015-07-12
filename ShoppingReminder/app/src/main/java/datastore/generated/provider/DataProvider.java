@@ -4,21 +4,20 @@
  */
 package datastore.generated.provider;
 
-import java.util.Arrays;
-
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import home.akanashin.shoppingreminder.BuildConfig;
+import java.util.Arrays;
+
 import datastore.generated.provider.base.BaseContentProvider;
+import datastore.generated.provider.places.PlacesColumns;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkColumns;
 import datastore.generated.provider.placetypes.PlaceTypesColumns;
-import datastore.generated.provider.places.PlacesColumns;
+import home.akanashin.shoppingreminder.BuildConfig;
 
 public class DataProvider extends BaseContentProvider {
     private static final String TAG = DataProvider.class.getSimpleName();

@@ -41,12 +41,6 @@
             android:label="@string/title_activity_main2" >
         </activity>
 
-        <!-- provider
-            android:name="utils.MySQLDataProvider"
-            android:authorities="home.akanashin.shoppingreminder"
-            android:enabled="true"
-            android:exported="true" >
-        </provider -->
         <provider
             android:name="datastore.generated.provider.DataProvider"
             android:authorities="home.akanashin.shoppingreminder"

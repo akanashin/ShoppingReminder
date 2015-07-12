@@ -5,17 +5,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
-
-import java.util.ArrayList;
 
 import home.akanashin.shoppingreminder.R;
 import operations.Operations;
-import utils.async_stuff.AsyncOpCallback;
 import utils.async_stuff.GenericActivity;
-import utils.database.DatabaseHelper;
-import utils.datatypes.PlaceData;
-import utils.datatypes.PlaceType;
 
 
 public class MainActivity extends GenericActivity<Operations> {

@@ -4,12 +4,9 @@
  */
 package datastore.generated.provider.placetypes;
 
-import datastore.generated.provider.base.BaseModel;
-
-import java.util.Date;
-
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import datastore.generated.provider.base.BaseModel;
 
 /**
  * Types of places

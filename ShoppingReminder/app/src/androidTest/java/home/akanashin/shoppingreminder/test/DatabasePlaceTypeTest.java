@@ -4,15 +4,12 @@ import android.test.AndroidTestCase;
 
 import operations.CommandSyncer;
 import operations.Operations;
-import utils.database.DatabaseHelper;
 import utils.datatypes.PlaceType;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing of database operations with PlaceType</a>
  */
 public class DatabasePlaceTypeTest extends AndroidTestCase {
-    private DatabaseHelper mDB;
-
     private PlaceType[] mTypes = new PlaceType[]{
             new PlaceType("Blue",  0xFF0000FF),
             new PlaceType("Green", 0xFF00FF00),
@@ -24,8 +21,6 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-//        mDB = new DatabaseHelper(mContext);
-//        mDB.clearDB();
 
         mOps = new Operations();
         mOps.onConfiguration(true); // initialization of operations
@@ -33,8 +28,6 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
 
     @Override
     public void tearDown() throws Exception {
-//        mDB.clearDB();
-//        mDB.close();
         super.tearDown();
     }
 

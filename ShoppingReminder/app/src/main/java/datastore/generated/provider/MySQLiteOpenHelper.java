@@ -13,10 +13,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.util.Log;
 
-import home.akanashin.shoppingreminder.BuildConfig;
+import datastore.generated.provider.places.PlacesColumns;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkColumns;
 import datastore.generated.provider.placetypes.PlaceTypesColumns;
-import datastore.generated.provider.places.PlacesColumns;
+import home.akanashin.shoppingreminder.BuildConfig;
 
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = MySQLiteOpenHelper.class.getSimpleName();
