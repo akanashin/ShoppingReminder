@@ -1,0 +1,29 @@
+{
+  "documentation": "Entity joining places and types many-to-many",
+  "fields": [
+    {
+      "name": "place_id",
+      "type": "Long",
+      "nullable": false,
+      "foreignKey": {
+        "table": "places",
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "name": "place_type_id",
+      "type": "Long",
+      "nullable": false,
+      "foreignKey": {
+        "table": "place_types",
+        "onDelete": "CASCADE"
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "name": "unique_place_type",
+      "definition": "UNIQUE (place_id, place_type_id) ON CONFLICT REPLACE"
+    }
+  ]
+}

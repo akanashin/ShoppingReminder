@@ -2,12 +2,8 @@ package home.akanashin.shoppingreminder.test;
 
 import android.test.AndroidTestCase;
 
-import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
-
 import operations.CommandSyncer;
 import operations.Operations;
-import utils.async_stuff.AsyncOpCallback;
 import utils.database.DatabaseHelper;
 import utils.datatypes.PlaceType;
 
@@ -28,8 +24,8 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        mDB = new DatabaseHelper(mContext);
-        mDB.clearDB();
+//        mDB = new DatabaseHelper(mContext);
+//        mDB.clearDB();
 
         mOps = new Operations();
         mOps.onConfiguration(true); // initialization of operations
@@ -37,14 +33,14 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        mDB.clearDB();
-        mDB.close();
+//        mDB.clearDB();
+//        mDB.close();
         super.tearDown();
     }
 
     // adding and checking
     public void testAdd() {
-        mDB.clearDB();
+        clearDB();
 
         // 1st: fill database
         insertOrModifyToDB(mTypes);
@@ -58,7 +54,8 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
         for (int i = 0; i < mTypes.length; i++) {
             // check ID of param[i] (must be equal to i)
             assertFalse(data[i] == null);
-            assertEquals(data[i].id, i + 1);
+            // do not test IDs: they WILL be different if database already existed
+            //assertEquals(i+1, data[i].id);
 
             assertTrue(mTypes[i].equals(data[i]));
         }
@@ -68,7 +65,7 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
      * Test for modifying existing element
      */
     public void testModify() {
-        mDB.clearDB();
+        clearDB();
 
         // 1st: fill database
         insertOrModifyToDB(mTypes);
@@ -94,9 +91,9 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
         // all elements should be equal
         // Nb: database returns elements sorted by name so order should be the same
         for (int i = 0; i < data.length; i++) {
-            assertEquals(data[i].id,    newData[i].id);
+            assertEquals(data[i].id, newData[i].id);
             assertEquals(data[i].color, newData[i].color);
-            assertEquals(data[i].name,  newData[i].name);
+            assertEquals(data[i].name, newData[i].name);
         }
     }
 
@@ -104,7 +101,7 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
      * Test for deleting element
      */
     public void testDelete() {
-        mDB.clearDB();
+        clearDB();
 
         // 1st: fill database
         insertOrModifyToDB(mTypes);
@@ -114,7 +111,7 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
 
         // Nb: i don't check whether i read data successfully or not
         //  this is done in another test
-        int id    = data[1].id;
+        long id    = data[1].id;
 
         // 3rd: delete from database
         deleteFromDB(id);
@@ -155,11 +152,23 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
     /**
      * Synchronous wrapper over deleting from database
      */
-    private void deleteFromDB(final int id) {
+    private void deleteFromDB(final long id) {
         new CommandSyncer<Void>() {
             @Override
             public void exec() {
                 mOps.placeType().delete(id, this);
+            }
+        }.doStuff();
+    }
+
+    /**
+     * Synchronous wrapper over clearing database
+     */
+    private void clearDB() {
+        new CommandSyncer<Void>() {
+            @Override
+            public void exec() {
+                mOps.clearDB(this);
             }
         }.doStuff();
     }

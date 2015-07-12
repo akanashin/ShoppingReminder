@@ -10,7 +10,7 @@ import static utils.Utils.compare;
  * Created by akana_000 on 6/19/2015.
  */
 public class PlaceData {
-    public Integer     id;
+    public long        id;
     public LatLng      loc;
     public String      name;
 
@@ -34,7 +34,7 @@ public class PlaceData {
         loc   = new LatLng(aLat, aLong);
         types = aTypes;
     }
-    public PlaceData(Integer aId, String aName, Double aLat, Double aLong, ArrayList<PlaceType> aTypes) {
+    public PlaceData(long aId, String aName, Double aLat, Double aLong, ArrayList<PlaceType> aTypes) {
         id    = aId;
         name  = aName;
         loc   = new LatLng(aLat, aLong);

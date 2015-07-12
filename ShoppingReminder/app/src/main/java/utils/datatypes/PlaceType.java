@@ -6,12 +6,12 @@ import static utils.Utils.compare;
  * Created by akana_000 on 6/20/2015.
  */
 public class PlaceType {
-    public int id; // this is unique key in database
+    public long id; // this is unique key in database
     public String name;
     public int color;
 
     // this class is just a storage for returning usage statistics for this type
-    public class Usage {
+    public static class Usage {
         public int n_places;
         public int n_tasks;
     }
@@ -23,7 +23,7 @@ public class PlaceType {
         color = aColor;
     }
 
-    public PlaceType(int aId, String aName, int aColor) {
+    public PlaceType(long aId, String aName, int aColor) {
         id = aId;
         name = aName;
         color = aColor;

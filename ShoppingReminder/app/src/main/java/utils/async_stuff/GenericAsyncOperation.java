@@ -11,12 +11,10 @@ import utils.MyApp;
  */
 public abstract class GenericAsyncOperation<ReturnType> {
 
-    protected Operations mOps;
     private GenericAsyncTask mAsyncTask;
     private AsyncOpCallback mCb; //callback to be called when
 
-    public GenericAsyncOperation(Operations ops, AsyncOpCallback cb) {
-        mOps = ops;
+    public GenericAsyncOperation(AsyncOpCallback cb) {
         mAsyncTask = new GenericAsyncTask<>(this);
         mCb = cb;
     }

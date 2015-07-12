@@ -1,0 +1,24 @@
+{
+  "documentation": "Types of places",
+  "fields": [
+    {
+      "documentation": "Note for this type",
+      "name": "note",
+      "type": "String",
+      "nullable": false
+    },
+    {
+      "documentation": "Color attached to this type",
+      "name": "color",
+      "type": "Integer",
+      "nullable": false
+    }
+  ],
+
+  "constraints": [
+    {
+      "name": "unique_name",
+      "definition": "UNIQUE (note) ON CONFLICT REPLACE"
+    }
+  ]
+}

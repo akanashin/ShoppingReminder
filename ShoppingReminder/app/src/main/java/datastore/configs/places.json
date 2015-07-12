@@ -1,0 +1,30 @@
+{
+  "documentation": "Places",
+  "fields": [
+    {
+      "documentation": "Name of place",
+      "name": "name",
+      "type": "String",
+      "nullable": false
+    },
+    {
+      "documentation": "Location of the place (latitude)",
+      "name": "latitude",
+      "type": "Double",
+      "nullable": false
+    },
+    {
+      "documentation": "Location of the place (longitude)",
+      "name": "longitude",
+      "type": "Double",
+      "nullable": false
+    }
+  ],
+
+  "constraints": [
+    {
+      "name": "unique_name",
+      "definition": "UNIQUE (name) ON CONFLICT REPLACE"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "syntaxVersion": 3,
+  "projectPackageId": "home.akanashin.shoppingreminder",
+  "authority": "home.akanashin.shoppingreminder",
+  "providerJavaPackage": "datastore.generated.provider",
+  "providerClassName": "DataProvider",
+  "sqliteOpenHelperClassName": "MySQLiteOpenHelper",
+  "sqliteOpenHelperCallbacksClassName": "MySQLiteOpenHelperCallbacks",
+  "databaseFileName": "database.db",
+  "databaseVersion": 1,
+  "enableForeignKeys": true,
+  "useAnnotations": true
+}

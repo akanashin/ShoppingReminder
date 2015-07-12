@@ -41,12 +41,17 @@
             android:label="@string/title_activity_main2" >
         </activity>
 
-        <provider
+        <!-- provider
             android:name="utils.MySQLDataProvider"
             android:authorities="home.akanashin.shoppingreminder"
             android:enabled="true"
             android:exported="true" >
-        </provider>
+        </provider -->
+        <provider
+            android:name="datastore.generated.provider.DataProvider"
+            android:authorities="home.akanashin.shoppingreminder"
+            android:enabled="true"
+            android:exported="false" />
 
         <activity
             android:name="activities.ListPlaceTypesActivity"

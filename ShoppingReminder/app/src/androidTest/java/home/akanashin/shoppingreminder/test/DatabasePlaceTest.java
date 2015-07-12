@@ -18,8 +18,6 @@ import utils.datatypes.PlaceType;
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing of database operations with PlaceType</a>
  */
 public class DatabasePlaceTest extends AndroidTestCase {
-    private DatabaseHelper mDB;
-
     // initial structure
     // Nb: all these need to have fixed IDs
     private PlaceType[] mTypes = new PlaceType[] {
@@ -44,8 +42,6 @@ public class DatabasePlaceTest extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        mDB = new DatabaseHelper(mContext);
-        mDB.clearDB();
 
         mOps = new Operations();
         mOps.onConfiguration(true); // initialization of operations
@@ -53,8 +49,6 @@ public class DatabasePlaceTest extends AndroidTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        mDB.clearDB();
-        mDB.close();
         super.tearDown();
     }
 
@@ -72,9 +66,7 @@ public class DatabasePlaceTest extends AndroidTestCase {
         assertEquals(mPlaces.length, data.length);
 
         for (int i = 0; i < mPlaces.length; i++) {
-            // check ID of param[i] (must be equal to i)
             assertFalse(data[i] == null);
-            assertTrue(data[i].id == i + 1);
 
             assertTrue(mPlaces[i].equals(data[i]));
         }
@@ -112,9 +104,7 @@ public class DatabasePlaceTest extends AndroidTestCase {
 
         // 6th: validate
         for (int i = 0; i < newdata.length; i++) {
-            // check ID of param[i] (must be equal to i)
             assertFalse(newdata[i] == null);
-            assertTrue(newdata[i].id == i + 1);
 
             assertTrue(data[i].equals(newdata[i]));
         }
@@ -164,22 +154,28 @@ public class DatabasePlaceTest extends AndroidTestCase {
         prepare();
 
         // 1st: check usage statistics - it should be 0/0
-        PlaceType.Usage usage = queryPlaceTypesUsage(1);
+        PlaceType.Usage usage = queryPlaceTypesUsage(mTypes[1].id);
         assertEquals(0, usage.n_places);
 
         // 2st: fill database with some data
         insertOrModifyToDB(mPlaces);
 
-        // 3rd: check usage statistics - it should be not empty
-        usage = queryPlaceTypesUsage(1);
-        assertEquals(2, usage.n_places);
+        // 3rd: check usage statistics - it should be <something>
+        usage = queryPlaceTypesUsage(mTypes[1].id);
+        int counter = 0;
+        for(PlaceData placeData: mPlaces)
+            for(PlaceType placeType: placeData.types)
+                if (placeType.id == mTypes[1].id)
+                    counter++;
+
+        assertEquals(counter, usage.n_places);
     }
 
     /**
      * Prepare database
      */
     private void prepare() {
-        mDB.clearDB();
+        clearDB();
 
         // create table with PlaceTypes
         writePlaceTypesToDB();
@@ -191,7 +187,7 @@ public class DatabasePlaceTest extends AndroidTestCase {
         for(PlaceData place: mPlaces)
             for(PlaceType pt: place.types) {
                 // set ID based on name
-                int id = -1;
+                long id = -1;
                 for(PlaceType placeType: mTypes)
                     if (placeType.name.equals(pt.name))
                         id = placeType.id;
@@ -204,6 +200,17 @@ public class DatabasePlaceTest extends AndroidTestCase {
         // now i have array of places fully prepared to test
     }
 
+    /**
+     * Synchronous wrapper over clearing database
+     */
+    private void clearDB() {
+        new CommandSyncer<Void>() {
+            @Override
+            public void exec() {
+                mOps.clearDB(this);
+            }
+        }.doStuff();
+    }
 
     /**
      * Synchronous wrapper over adding to database
@@ -258,7 +265,7 @@ public class DatabasePlaceTest extends AndroidTestCase {
     /**
      * Synchronous wrapper over deleting from database
      */
-    private void deleteFromDB(final int id) {
+    private void deleteFromDB(final long id) {
         new CommandSyncer<Void>() {
             @Override
             public void exec() {
@@ -270,7 +277,7 @@ public class DatabasePlaceTest extends AndroidTestCase {
     /**
      * Synchronous getter of usage information for PlaceType
      */
-    private PlaceType.Usage queryPlaceTypesUsage(final int id) {
+    private PlaceType.Usage queryPlaceTypesUsage(final long id) {
         return new CommandSyncer<PlaceType.Usage>() {
             @Override
             public void exec() {
