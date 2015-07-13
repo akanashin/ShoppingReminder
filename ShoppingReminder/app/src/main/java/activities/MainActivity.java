@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import home.akanashin.shoppingreminder.R;
 import operations.Operations;
+import utils.async_stuff.AsyncOpCallback;
 import utils.async_stuff.GenericActivity;
 
 
@@ -50,6 +52,15 @@ public class MainActivity extends GenericActivity<Operations> {
     public void onBtnEditPlaceTypesClick(View v) {
         Intent intent = new Intent(this, ListPlaceTypesActivity.class);
         startActivity(intent);
+    }
+
+    public void onBtnInitDBClick(View v) {
+        getOps().initDB(new AsyncOpCallback() {
+            @Override
+            public void run(Object param) {
+                Toast.makeText(getBaseContext(), "Demo database created", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
 

@@ -14,35 +14,17 @@ import datastore.generated.provider.placetypelink.PlaceTypeLinkContentValues;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkCursor;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkSelection;
 import utils.Commons;
-import utils.async_stuff.AsyncOpCallback;
-import utils.async_stuff.DatabaseOperation;
 import utils.datatypes.PlaceData;
 import utils.datatypes.PlaceType;
 
 /**
  * Created by akana_000 on 7/12/2015.
  */
-public class PlaceOps implements OpsInterface<PlaceData[]> {
-    public void queryList(AsyncOpCallback cb) {
-        Log.d(Commons.TAG, "PlaceOps.queryList requested");
+public class PlaceOps extends OpsInterface<PlaceData[], Void> {
 
-        // -1 - for querying all the records
-        query(-1, cb);
-    }
-
-    // get data about existing place
-    public void query(final long uid, AsyncOpCallback cb) {
-        Log.d(Commons.TAG, "PlaceOps.query requested");
-
-        new DatabaseOperation<PlaceData[]>(cb) {
-            @Override
-            public PlaceData[] doOperation(ContentResolver cr) {
-                return queryHelper(cr, uid);
-            }
-        }.run();
-    }
-
-    private PlaceData[] queryHelper(ContentResolver cr, long uid) {
+    @Override
+    protected PlaceData[] doQuery(ContentResolver cr, long uid) {
+        Log.d(Commons.TAG, "PlaceType.doQuery(" + uid + ") called");
         ArrayList<PlaceData> arr = new ArrayList<>();
 
         PlaceTypeLinkSelection sel = new PlaceTypeLinkSelection();
@@ -90,96 +72,90 @@ public class PlaceOps implements OpsInterface<PlaceData[]> {
         return arr.toArray(new PlaceData[0]);
     }
 
-    // delete place
-    // uid == -1: delete all the places
-    public void delete(final long uid, AsyncOpCallback cb) {
-        Log.d(Commons.TAG, "PlaceOps.delete requested");
+    @Override
+    protected Integer doAddOrModify(ContentResolver cr, PlaceData[] data) throws OpsException {
+        Log.d(Commons.TAG, "PlaceType.doAddOrModify(" + data + ") called");
 
-        new DatabaseOperation<Integer>(cb) {
-            @Override
-            public Integer doOperation(ContentResolver cr) {
-                PlacesSelection where = new PlacesSelection();
+        // First: some checks
+        for (PlaceData place : data) {
+            // 1st: not empty name
+            if (place.name == null
+                    || place.name.trim().isEmpty())
+                throw new OpsException(OpsException.MSG_EMPTY_NAME);
 
-                if (uid != -1)
-                    where = where.id(uid);
+            // 2nd: place nas ho types
+            if (place.types.isEmpty())
+                throw new OpsException(OpsException.MSG_EMPTY_LIST_OF_TYPES);
+        }
 
-                return where.delete(cr);
+        // Now: processing
+        for (PlaceData place : data) {
+            PlacesContentValues place_cv = new PlacesContentValues();
+            place_cv.putName(place.name);
+            place_cv.putLatitude(place.loc.latitude);
+            place_cv.putLongitude(place.loc.longitude);
+
+            Boolean needToWriteLinks = false;
+            if (place.id == 0) {
+                // creating new record and store its ID
+                Uri uri = place_cv.insert(cr);
+                place.id = Long.parseLong(uri.getLastPathSegment());
+
+                needToWriteLinks = true;
+            } else {
+                // updating the record
+
+                // 1st - get old value of record
+                PlaceData[] cur = doQuery(cr, place.id);
+                if (cur.length != 1)
+                    throw new AssertionError("Logical error: found " + cur.length + " records for ID=" + place.id);
+
+                // 2nd: do i need to update record at all?
+                if (cur[0].equals(place))
+                    continue;
+
+                // 3rd: do i need to update record data?
+                if (!cur[0].name.equals(place.name) ||
+                        !cur[0].loc.equals(place.loc))
+                    place_cv.update(cr, new PlacesSelection().id(place.id));
+
+                // 4th: do i need to update types?
+                if (!cur[0].types.equals(place.types)) {
+                    // delete old PlaceTypeLink records (i will recreate them later)
+                    PlaceTypeLinkSelection sel = new PlaceTypeLinkSelection();
+                    sel.placeId(place.id).delete(cr);
+
+                    needToWriteLinks = true;
+                }
             }
-        }.run();
+
+            // now update PlaceTypeLink table (create all the records)
+            if (needToWriteLinks)
+                for (PlaceType pt : place.types) {
+                    PlaceTypeLinkContentValues cv = new PlaceTypeLinkContentValues();
+
+                    cv.putPlaceId(place.id);
+                    cv.putPlaceTypeId(pt.id);
+                    cv.insert(cr);
+                }
+        }
+
+        return data.length;
     }
 
-    // add new or modify existing place
-    public void addOrModify(final PlaceData[] data, AsyncOpCallback cb) {
-        Log.d(Commons.TAG, "PlaceType.addOrModify requested");
+    @Override
+    protected Integer doDelete(ContentResolver cr, long uid) {
+        Log.d(Commons.TAG, "PlaceType.doDelete(" + uid + ") called");
+        PlacesSelection where = new PlacesSelection();
 
-        new DatabaseOperation<Integer>(cb) {
-            @Override
-            public Integer doOperation(ContentResolver cr) throws OpsException {
-                //some checks
-                for (PlaceData place : data) {
-                    // 1st: not empty name
-                    if (place.name == null
-                            || place.name.trim().isEmpty())
-                        throw new OpsException(OpsException.MSG_EMPTY_NAME);
+        if (uid != -1)
+            where = where.id(uid);
 
-                    // 2nd: place nas ho types
-                    if (place.types.isEmpty())
-                        throw new OpsException(OpsException.MSG_EMPTY_LIST_OF_TYPES);
-                }
+        return where.delete(cr);
+    }
 
-                for (PlaceData place : data) {
-                    PlacesContentValues place_cv = new PlacesContentValues();
-                    place_cv.putName(place.name);
-                    place_cv.putLatitude(place.loc.latitude);
-                    place_cv.putLongitude(place.loc.longitude);
-
-                    Boolean needToWriteLinks = false;
-                    if (place.id == 0) {
-                        // creating new record and store its ID
-                        Uri uri = place_cv.insert(cr);
-                        place.id = Long.parseLong(uri.getLastPathSegment());
-
-                        needToWriteLinks = true;
-                    } else {
-                        // updating the record
-
-                        // 1st - get old value of record
-                        PlaceData[] cur = queryHelper(cr, place.id);
-                        if (cur.length != 1)
-                            throw new AssertionError("Logical error: found " + cur.length + " records for ID=" + place.id);
-
-                        // 2nd: do i need to update record at all?
-                        if (cur[0].equals(place))
-                            continue;
-
-                        // 3rd: do i need to update record data?
-                        if (!cur[0].name.equals(place.name) ||
-                                !cur[0].loc.equals(place.loc))
-                            place_cv.update(cr, new PlacesSelection().id(place.id));
-
-                        // 4th: do i need to update types?
-                        if (!cur[0].types.equals(place.types)) {
-                            // delete old PlaceTypeLink records (i will recreate them later)
-                            PlaceTypeLinkSelection sel = new PlaceTypeLinkSelection();
-                            sel.placeId(place.id).delete(cr);
-
-                            needToWriteLinks = true;
-                        }
-                    }
-
-                    // now update PlaceTypeLink table (create all the records)
-                    if (needToWriteLinks)
-                        for (PlaceType pt : place.types) {
-                            PlaceTypeLinkContentValues cv = new PlaceTypeLinkContentValues();
-
-                            cv.putPlaceId(place.id);
-                            cv.putPlaceTypeId(pt.id);
-                            cv.insert(cr);
-                        }
-                }
-
-                return data.length;
-            }
-        }.run();
+    @Override
+    protected Void doQueryUsageStatistics(ContentResolver cr, long uid) {
+        throw new UnsupportedOperationException("Not Implemented");
     }
 }

@@ -17,9 +17,11 @@ import net.margaritov.preference.colorpicker.ColorPickerDialog;
 import home.akanashin.shoppingreminder.R;
 import operations.Operations;
 import utils.Commons;
+import utils.Utils;
 import utils.async_stuff.AsyncOpCallback;
 import utils.async_stuff.GenericActivity;
 import utils.datatypes.PlaceType;
+import utils.datatypes.Result;
 
 
 public class EditPlaceTypeActivity extends GenericActivity<Operations> {
@@ -48,6 +50,8 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
         // if UID = 0 this is creating new PlaceType
         //  else we edit existing one
         Intent intent = getIntent();
+        mPlaceType = new PlaceType("", 0);
+
         mPlaceType.id = intent.getLongExtra(INTENT_ID_UID, -1);
         if (mPlaceType.id == -1)
             throw new AssertionError("No UID was bundled into Intent!");
@@ -93,16 +97,24 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
             final View btn_delete = findViewById(R.id.btn_remove);
 
             // request for statistics data
-            getOps().placeType().queryUsageStatistics(mPlaceType.id, new AsyncOpCallback<PlaceType.Usage>() {
-                @Override
-                public void run(PlaceType.Usage param) {
-                    tv_places.setText("" + param.n_places);
-                    tv_tasks.setText("" + param.n_tasks);
+            getOps().placeType().queryUsageStatistics(mPlaceType.id,
+                    new AsyncOpCallback<Result<PlaceType.Usage>>() {
+                        @Override
+                        public void run(Result<PlaceType.Usage> param) {
+                            PlaceType.Usage usage = param.result;
 
-                    if (param.n_places > 0 || param.n_tasks > 0)
-                        btn_delete.setEnabled(false);
-                }
-            });
+                            if (usage == null) {
+                                Utils.toast("Error reading from database: " + param.message);
+                                return;
+                            }
+
+                            tv_places.setText("" + usage.n_places);
+                            tv_tasks.setText("" + usage.n_tasks);
+
+                            if (usage.n_places > 0 || usage.n_tasks > 0)
+                                btn_delete.setEnabled(false);
+                        }
+                    });
         }
 
         // set color of marker
@@ -162,9 +174,14 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
         mPlaceType.name = mNameEditor.getText().toString();
         getOps().placeType().addOrModify(
                 new PlaceType[] {mPlaceType},
-                new AsyncOpCallback<Void>() {
+                new AsyncOpCallback<Result<Integer>>() {
                     @Override
-                    public void run(Void v) {
+                    public void run(Result<Integer> v) {
+                        if (v.result == null) {
+                            Utils.toast(v.message);
+                            return;
+                        }
+
                         setResult(RESULT_OK);
                         finish();
                     }
@@ -185,9 +202,16 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
      * Send command to delete the item
      */
     public void onDeleteButtonClick(View v) {
-        getOps().placeType().delete(mPlaceType.id, new AsyncOpCallback() {
+        getOps().placeType().delete(mPlaceType.id, new AsyncOpCallback<Result<Integer>>() {
             @Override
-            public void run(Object param) {
+            public void run(Result<Integer> param) {
+                if (param.result == null) {
+                    Utils.toast("Error reading database: " + param.message);
+                    setResult(RESULT_CANCELED);
+                    finish();
+                    return;
+                }
+
                 setResult(RESULT_OK);
                 finish();
             }

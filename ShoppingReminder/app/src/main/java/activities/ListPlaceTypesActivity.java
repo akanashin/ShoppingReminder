@@ -18,9 +18,11 @@ import home.akanashin.shoppingreminder.R;
 import operations.Operations;
 import utils.Commons;
 import utils.ListViewAdapter;
+import utils.Utils;
 import utils.async_stuff.AsyncOpCallback;
 import utils.async_stuff.GenericActivity;
 import utils.datatypes.PlaceType;
+import utils.datatypes.Result;
 
 
 public class ListPlaceTypesActivity extends GenericActivity<Operations> {
@@ -39,11 +41,16 @@ public class ListPlaceTypesActivity extends GenericActivity<Operations> {
         final ListView lv = (ListView) findViewById(R.id.lv_types);
         final ListPlaceTypesActivity me = this;
 
-        getOps().placeType().queryList(new AsyncOpCallback<PlaceType[]>() {
+        getOps().placeType().queryList(new AsyncOpCallback<Result<PlaceType[]>>() {
             @Override
-            public void run(final PlaceType[] data) {
+            public void run(final Result<PlaceType[]> data) {
+                if (data.result == null) {
+                    Utils.toast("Error happened while reading data: " + data.message);
+                    return;
+                }
+
                 // set new data into ListView
-                lv.setAdapter(new ListViewAdapter<PlaceType>(getBaseContext(), data, R.layout.list_item_place_type) {
+                lv.setAdapter(new ListViewAdapter<PlaceType>(getBaseContext(), data.result, R.layout.list_item_place_type) {
                     @Override
                     protected void fillView(View v, PlaceType data) {
                         // set name
@@ -60,7 +67,7 @@ public class ListPlaceTypesActivity extends GenericActivity<Operations> {
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        me.onListItemClick(data[i]);
+                        me.onListItemClick(data.result[i]);
                     }
                 });
             }

@@ -1,5 +1,7 @@
 package utils;
 
+import android.widget.Toast;
+
 /**
  * Created by akana_000 on 6/19/2015.
  */

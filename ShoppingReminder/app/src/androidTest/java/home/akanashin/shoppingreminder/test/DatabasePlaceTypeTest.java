@@ -19,7 +19,7 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
     };
 
     private Operations mOps;
-    private Utils<PlaceType[], PlaceTypeOps> mUtils;
+    private Utils<PlaceType[], PlaceType.Usage, PlaceTypeOps> mUtils;
 
     @Override
     public void setUp() throws Exception {

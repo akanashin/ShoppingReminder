@@ -1,9 +1,14 @@
 package utils;
 
+import android.widget.Toast;
+
 /**
  * Created by akana_000 on 6/27/2015.
  */
 public class Utils {
+    public static void toast(String text) {
+        Toast.makeText(MyApp.getContext(), text, Toast.LENGTH_LONG).show();
+    }
 
     /**
      * Comparator of two objects with protection from 'the same object' and 'one of them is null'

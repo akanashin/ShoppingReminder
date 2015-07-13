@@ -39,7 +39,7 @@ public class DatabasePlaceTest extends AndroidTestCase {
     };
 
     private Operations mOps;
-    private Utils<PlaceData[], PlaceOps> mUtils;
+    private Utils<PlaceData[], Void, PlaceOps> mUtils;
 
     @Override
     public void setUp() throws Exception {
@@ -223,13 +223,13 @@ public class DatabasePlaceTest extends AndroidTestCase {
 
         // read PlaceTypes and fix records for Places
         //  NB: i don't check whether data was read correctly or not
-        Result<PlaceType[]> mTypes = queryPlaceTypesFromDB();
+        Result<PlaceType[]> newTypes = queryPlaceTypesFromDB();
 
         for(PlaceData place: mPlaces)
             for(PlaceType pt: place.types) {
                 // set ID based on name
                 long id = -1;
-                for(PlaceType placeType: mTypes.result)
+                for(PlaceType placeType: newTypes.result)
                     if (placeType.name.equals(pt.name))
                         id = placeType.id;
 

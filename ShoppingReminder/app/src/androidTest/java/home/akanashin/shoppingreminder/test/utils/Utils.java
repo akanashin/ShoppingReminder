@@ -12,8 +12,11 @@ import static junit.framework.Assert.assertTrue;
 /**
  * Generic database routines and checkers for unit-test
  */
-public class Utils<DataType,
-        OperationsType extends OpsInterface<DataType>> {
+public class Utils <
+        DataType,
+        DataUsageType,
+        OperationsType extends OpsInterface<DataType, DataUsageType> > {
+
     private OperationsType mOps;
 
     public Utils(OperationsType ops) {
