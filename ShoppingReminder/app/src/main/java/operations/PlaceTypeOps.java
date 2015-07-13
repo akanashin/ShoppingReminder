@@ -74,7 +74,14 @@ public class PlaceTypeOps implements OpsInterface<PlaceType[]> {
 
         new DatabaseOperation<Integer>(cb) {
             @Override
-            public Integer doOperation(ContentResolver cr) {
+            public Integer doOperation(ContentResolver cr) throws OpsException {
+                //some checks
+                // 1st: not empty name
+                for (PlaceType placeType : data)
+                    if (placeType.name == null
+                        || placeType.name.trim().isEmpty())
+                    throw new OpsException(OpsException.MSG_EMPTY_NAME);
+
                 int updated = 0;
                 for (PlaceType placeType : data) {
                     PlaceTypesContentValues cv = new PlaceTypesContentValues();

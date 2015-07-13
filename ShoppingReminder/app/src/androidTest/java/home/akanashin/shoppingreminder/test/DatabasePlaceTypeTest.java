@@ -4,6 +4,7 @@ import android.test.AndroidTestCase;
 
 import home.akanashin.shoppingreminder.test.utils.Utils;
 import operations.Operations;
+import operations.OpsException;
 import operations.PlaceTypeOps;
 import utils.datatypes.PlaceType;
 
@@ -60,8 +61,7 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
     }
 
     /**
-     *  Test for adding type with already existing name
-     *  (should produce error!)
+     *  Test for adding type which should produce errors
      */
     public void testAddException() {
         mUtils.clearDB();
@@ -69,9 +69,17 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
         // 1st: fill database
         mUtils.checkedInsertOrModify(mTypes.length, "", mTypes);
 
-        // 2nd: try to put one more type into database
-        PlaceType newType = new PlaceType(mTypes[0].name, mTypes[0].color + 10);
-        mUtils.checkedInsertOrModify(null, "column note is not unique (code 19)", new PlaceType[]{newType});
+        // 2nd: try to put 'the same name' into database
+        mUtils.checkedInsertOrModify(
+                null,
+                OpsException.MSG_PLACE_TYPE_NAME_IS_NOT_UNIQUE,
+                new PlaceType[]{new PlaceType(mTypes[0].name, mTypes[0].color + 10)} );
+
+        // 3rd: try to put 'empty name' into database
+        mUtils.checkedInsertOrModify(
+                null,
+                OpsException.MSG_EMPTY_NAME,
+                new PlaceType[]{new PlaceType("", mTypes[0].color + 10)} );
     }
 
     /**

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import home.akanashin.shoppingreminder.test.utils.Utils;
 import operations.Operations;
+import operations.OpsException;
 import operations.PlaceOps;
 import utils.CommandSyncer;
 import utils.datatypes.PlaceData;
@@ -73,6 +74,43 @@ public class DatabasePlaceTest extends AndroidTestCase {
 
             assertTrue(mPlaces[i].equals(data[i]));
         }
+    }
+
+    /**
+     *  Test for adding type which should produce errors
+     */
+    public void testAddException() {
+        prepare();
+
+        // 1st: fill database
+        mUtils.checkedInsertOrModify(mPlaces.length, "", mPlaces);
+
+        PlaceData newPlace = new PlaceData(
+                mPlaces[0].name,
+                mPlaces[0].loc.latitude,
+                mPlaces[0].loc.longitude,
+                mPlaces[0].types);
+
+        // 2nd: try to put 'the same name' into database
+        mUtils.checkedInsertOrModify(
+                null,
+                OpsException.MSG_PLACE_NAME_IS_NOT_UNIQUE,
+                new PlaceData[]{newPlace} );
+
+        // 3rd: try to put 'empty name' into database
+        newPlace.name = "   ";
+        mUtils.checkedInsertOrModify(
+                null,
+                OpsException.MSG_EMPTY_NAME,
+                new PlaceData[]{newPlace} );
+
+        // 4th: try to put 'empty list of types' into database
+        newPlace.name = "XXX";
+        newPlace.types.clear();
+        mUtils.checkedInsertOrModify(
+                null,
+                OpsException.MSG_EMPTY_LIST_OF_TYPES,
+                new PlaceData[]{newPlace} );
     }
 
     /**

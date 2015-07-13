@@ -3,6 +3,7 @@ package utils.async_stuff;
 import android.content.ContentResolver;
 import android.util.Log;
 
+import operations.OpsException;
 import utils.Commons;
 import utils.MyApp;
 import utils.datatypes.Result;
@@ -27,14 +28,20 @@ public abstract class DatabaseOperation<ReturnType> {
     }
 
     public Result<ReturnType> doInBackground() {
+        String message;
         try {
             return new Result<>( doOperation(MyApp.getContext().getContentResolver()) );
         } catch (android.database.SQLException ex) {
             Log.w(Commons.TAG, "SQL exception: " + ex.getMessage());
 
             // ToDo: translate to human readable format
-            return new Result<>(null, ex.getMessage());
+            message = ex.getMessage();
+        } catch (OpsException ex) {
+            Log.w(Commons.TAG, "Internal exception: " + ex.getMessage());
+            message = ex.getMessage();
         }
+
+        return new Result<>(null, message);
     }
 
     public void onPostExecute(Result<ReturnType> result) {
@@ -44,5 +51,5 @@ public abstract class DatabaseOperation<ReturnType> {
     /**
      * Synchronously create new record in database and return ID.
      */
-    public abstract ReturnType doOperation(ContentResolver cr);
+    public abstract ReturnType doOperation(ContentResolver cr) throws OpsException;
 }
