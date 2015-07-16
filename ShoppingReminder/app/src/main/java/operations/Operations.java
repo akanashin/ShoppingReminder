@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import datastore.generated.provider.places.PlacesSelection;
 import datastore.generated.provider.placetypes.PlaceTypesSelection;
+import datastore.generated.provider.tasks.TasksSelection;
 import utils.CommandSyncer;
 import utils.Commons;
 import utils.async_stuff.AsyncOpCallback;
@@ -21,6 +22,8 @@ import utils.datatypes.Result;
  * Created by akana_000 on 6/19/2015.
  */
 public class Operations implements ConfigurableOps {
+
+    private TaskOps      mTaskOps;
     private PlaceTypeOps mPlaceTypeOps;
     private PlaceOps     mPlaceOps;
 
@@ -35,6 +38,10 @@ public class Operations implements ConfigurableOps {
         return mPlaceOps;
     }
 
+    public TaskOps task() {
+        return mTaskOps;
+    }
+
     /**
      * Clearer of database
      */
@@ -42,13 +49,14 @@ public class Operations implements ConfigurableOps {
         new DatabaseOperation<Result<Integer>>(cb) {
             @Override
             public Result<Integer> doOperation(ContentResolver cr) {
-                // 1st: clear place-types - this should clear types and links
-                PlaceTypesSelection wPlaceTypes = new PlaceTypesSelection();
-                wPlaceTypes.delete(cr);
+                // 1st: clear place-types
+                new PlaceTypesSelection().delete(cr);
 
-                // 1st: clear places - this should clear places
-                PlacesSelection wPlaces = new PlacesSelection();
-                wPlaces.delete(cr);
+                // 2nd: clear places
+                new PlacesSelection().delete(cr);
+
+                // 3nd: clear tasks
+                new TasksSelection().delete(cr);
 
                 return null;
             }
@@ -94,7 +102,12 @@ public class Operations implements ConfigurableOps {
                 // write place types and re-query it to get proper IDs
                 placeType().addOrModifySync(mTypes);
 
-                PlaceType[] newTypes = placeType().queryListSync();
+                PlaceType[] newTypes = new PlaceType[0];
+                try {
+                    newTypes = placeType().queryListSync();
+                } catch (OpsException e) {
+                    throw new AssertionError(e.getMessage());
+                }
                 if(newTypes == null)
                     throw new AssertionError("Error: cannot read place types from database!");
 
@@ -136,5 +149,6 @@ public class Operations implements ConfigurableOps {
 
         mPlaceTypeOps = new PlaceTypeOps();
         mPlaceOps = new PlaceOps();
+        mTaskOps = new TaskOps();
     }
 }

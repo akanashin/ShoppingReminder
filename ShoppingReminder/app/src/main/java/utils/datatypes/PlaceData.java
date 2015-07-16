@@ -51,12 +51,13 @@ public class PlaceData {
         if(!(object instanceof PlaceData))
             throw new ClassCastException("Object is not PlaceData");
 
+        PlaceData other = (PlaceData) object;
         // check location
-        if ( !compare(loc,((PlaceData) object).loc)
-          || !compare(name,((PlaceData) object).name) )
+        if ( !compare(loc,other.loc)
+          || !compare(name,other.name) )
             return false;
 
         // check types
-        return types.equals(((PlaceData) object).types);
+        return types.equals(other.types);
     }
 }

@@ -21,7 +21,7 @@ public abstract class OpsInterface<DataType, DataUsageType> {
     public void queryList(AsyncOpCallback cb) {
         new DatabaseOperation<DataType>(cb) {
             @Override
-            public DataType doOperation(ContentResolver cr) {
+            public DataType doOperation(ContentResolver cr) throws OpsException {
                 return doQuery(cr, -1);
             }
         }.run();
@@ -30,7 +30,7 @@ public abstract class OpsInterface<DataType, DataUsageType> {
     public void query(final long uid, AsyncOpCallback cb) {
         new DatabaseOperation<DataType>(cb) {
             @Override
-            public DataType doOperation(ContentResolver cr) {
+            public DataType doOperation(ContentResolver cr) throws OpsException {
                 return doQuery(cr, uid);
             }
         }.run();
@@ -67,7 +67,7 @@ public abstract class OpsInterface<DataType, DataUsageType> {
      * These are syncronous versions of operations
      *        Use with care!
      */
-    public DataType queryListSync() {
+    public DataType queryListSync() throws OpsException {
         return doQuery(MyApp.getContext().getContentResolver(), -1);
     }
 
@@ -89,7 +89,7 @@ public abstract class OpsInterface<DataType, DataUsageType> {
     /**
      *  These need to be implemented in childs
      */
-    abstract protected DataType doQuery(ContentResolver cr, long uid);
+    abstract protected DataType doQuery(ContentResolver cr, long uid) throws OpsException;
     abstract protected Integer  doAddOrModify(ContentResolver cr, DataType data) throws OpsException;
     abstract protected Integer  doDelete(ContentResolver cr, long uid);
 

@@ -19,6 +19,9 @@ import datastore.generated.provider.base.BaseContentProvider;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkColumns;
 import datastore.generated.provider.placetypes.PlaceTypesColumns;
 import datastore.generated.provider.places.PlacesColumns;
+import datastore.generated.provider.taskplacelink.TaskPlaceLinkColumns;
+import datastore.generated.provider.taskplacetypelink.TaskPlaceTypeLinkColumns;
+import datastore.generated.provider.tasks.TasksColumns;
 
 public class DataProvider extends BaseContentProvider {
     private static final String TAG = DataProvider.class.getSimpleName();
@@ -40,6 +43,15 @@ public class DataProvider extends BaseContentProvider {
     private static final int URI_TYPE_PLACES = 4;
     private static final int URI_TYPE_PLACES_ID = 5;
 
+    private static final int URI_TYPE_TASK_PLACE_LINK = 6;
+    private static final int URI_TYPE_TASK_PLACE_LINK_ID = 7;
+
+    private static final int URI_TYPE_TASK_PLACE_TYPE_LINK = 8;
+    private static final int URI_TYPE_TASK_PLACE_TYPE_LINK_ID = 9;
+
+    private static final int URI_TYPE_TASKS = 10;
+    private static final int URI_TYPE_TASKS_ID = 11;
+
 
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
@@ -51,6 +63,12 @@ public class DataProvider extends BaseContentProvider {
         URI_MATCHER.addURI(AUTHORITY, PlaceTypesColumns.TABLE_NAME + "/#", URI_TYPE_PLACE_TYPES_ID);
         URI_MATCHER.addURI(AUTHORITY, PlacesColumns.TABLE_NAME, URI_TYPE_PLACES);
         URI_MATCHER.addURI(AUTHORITY, PlacesColumns.TABLE_NAME + "/#", URI_TYPE_PLACES_ID);
+        URI_MATCHER.addURI(AUTHORITY, TaskPlaceLinkColumns.TABLE_NAME, URI_TYPE_TASK_PLACE_LINK);
+        URI_MATCHER.addURI(AUTHORITY, TaskPlaceLinkColumns.TABLE_NAME + "/#", URI_TYPE_TASK_PLACE_LINK_ID);
+        URI_MATCHER.addURI(AUTHORITY, TaskPlaceTypeLinkColumns.TABLE_NAME, URI_TYPE_TASK_PLACE_TYPE_LINK);
+        URI_MATCHER.addURI(AUTHORITY, TaskPlaceTypeLinkColumns.TABLE_NAME + "/#", URI_TYPE_TASK_PLACE_TYPE_LINK_ID);
+        URI_MATCHER.addURI(AUTHORITY, TasksColumns.TABLE_NAME, URI_TYPE_TASKS);
+        URI_MATCHER.addURI(AUTHORITY, TasksColumns.TABLE_NAME + "/#", URI_TYPE_TASKS_ID);
     }
 
     @Override
@@ -81,6 +99,21 @@ public class DataProvider extends BaseContentProvider {
                 return TYPE_CURSOR_DIR + PlacesColumns.TABLE_NAME;
             case URI_TYPE_PLACES_ID:
                 return TYPE_CURSOR_ITEM + PlacesColumns.TABLE_NAME;
+
+            case URI_TYPE_TASK_PLACE_LINK:
+                return TYPE_CURSOR_DIR + TaskPlaceLinkColumns.TABLE_NAME;
+            case URI_TYPE_TASK_PLACE_LINK_ID:
+                return TYPE_CURSOR_ITEM + TaskPlaceLinkColumns.TABLE_NAME;
+
+            case URI_TYPE_TASK_PLACE_TYPE_LINK:
+                return TYPE_CURSOR_DIR + TaskPlaceTypeLinkColumns.TABLE_NAME;
+            case URI_TYPE_TASK_PLACE_TYPE_LINK_ID:
+                return TYPE_CURSOR_ITEM + TaskPlaceTypeLinkColumns.TABLE_NAME;
+
+            case URI_TYPE_TASKS:
+                return TYPE_CURSOR_DIR + TasksColumns.TABLE_NAME;
+            case URI_TYPE_TASKS_ID:
+                return TYPE_CURSOR_ITEM + TasksColumns.TABLE_NAME;
 
         }
         return null;
@@ -154,6 +187,42 @@ public class DataProvider extends BaseContentProvider {
                 res.orderBy = PlacesColumns.DEFAULT_ORDER;
                 break;
 
+            case URI_TYPE_TASK_PLACE_LINK:
+            case URI_TYPE_TASK_PLACE_LINK_ID:
+                res.table = TaskPlaceLinkColumns.TABLE_NAME;
+                res.idColumn = TaskPlaceLinkColumns._ID;
+                res.tablesWithJoins = TaskPlaceLinkColumns.TABLE_NAME;
+                if (TasksColumns.hasColumns(projection)) {
+                    res.tablesWithJoins += " LEFT OUTER JOIN " + TasksColumns.TABLE_NAME + " AS " + TaskPlaceLinkColumns.PREFIX_TASKS + " ON " + TaskPlaceLinkColumns.TABLE_NAME + "." + TaskPlaceLinkColumns.TASK_ID + "=" + TaskPlaceLinkColumns.PREFIX_TASKS + "." + TasksColumns._ID;
+                }
+                if (PlacesColumns.hasColumns(projection)) {
+                    res.tablesWithJoins += " LEFT OUTER JOIN " + PlacesColumns.TABLE_NAME + " AS " + TaskPlaceLinkColumns.PREFIX_PLACES + " ON " + TaskPlaceLinkColumns.TABLE_NAME + "." + TaskPlaceLinkColumns.PLACE_ID + "=" + TaskPlaceLinkColumns.PREFIX_PLACES + "." + PlacesColumns._ID;
+                }
+                res.orderBy = TaskPlaceLinkColumns.DEFAULT_ORDER;
+                break;
+
+            case URI_TYPE_TASK_PLACE_TYPE_LINK:
+            case URI_TYPE_TASK_PLACE_TYPE_LINK_ID:
+                res.table = TaskPlaceTypeLinkColumns.TABLE_NAME;
+                res.idColumn = TaskPlaceTypeLinkColumns._ID;
+                res.tablesWithJoins = TaskPlaceTypeLinkColumns.TABLE_NAME;
+                if (TasksColumns.hasColumns(projection)) {
+                    res.tablesWithJoins += " LEFT OUTER JOIN " + TasksColumns.TABLE_NAME + " AS " + TaskPlaceTypeLinkColumns.PREFIX_TASKS + " ON " + TaskPlaceTypeLinkColumns.TABLE_NAME + "." + TaskPlaceTypeLinkColumns.TASK_ID + "=" + TaskPlaceTypeLinkColumns.PREFIX_TASKS + "." + TasksColumns._ID;
+                }
+                if (PlaceTypesColumns.hasColumns(projection)) {
+                    res.tablesWithJoins += " LEFT OUTER JOIN " + PlaceTypesColumns.TABLE_NAME + " AS " + TaskPlaceTypeLinkColumns.PREFIX_PLACE_TYPES + " ON " + TaskPlaceTypeLinkColumns.TABLE_NAME + "." + TaskPlaceTypeLinkColumns.PLACE_TYPE_ID + "=" + TaskPlaceTypeLinkColumns.PREFIX_PLACE_TYPES + "." + PlaceTypesColumns._ID;
+                }
+                res.orderBy = TaskPlaceTypeLinkColumns.DEFAULT_ORDER;
+                break;
+
+            case URI_TYPE_TASKS:
+            case URI_TYPE_TASKS_ID:
+                res.table = TasksColumns.TABLE_NAME;
+                res.idColumn = TasksColumns._ID;
+                res.tablesWithJoins = TasksColumns.TABLE_NAME;
+                res.orderBy = TasksColumns.DEFAULT_ORDER;
+                break;
+
             default:
                 throw new IllegalArgumentException("The uri '" + uri + "' is not supported by this ContentProvider");
         }
@@ -162,6 +231,9 @@ public class DataProvider extends BaseContentProvider {
             case URI_TYPE_PLACE_TYPE_LINK_ID:
             case URI_TYPE_PLACE_TYPES_ID:
             case URI_TYPE_PLACES_ID:
+            case URI_TYPE_TASK_PLACE_LINK_ID:
+            case URI_TYPE_TASK_PLACE_TYPE_LINK_ID:
+            case URI_TYPE_TASKS_ID:
                 id = uri.getLastPathSegment();
         }
         if (id != null) {

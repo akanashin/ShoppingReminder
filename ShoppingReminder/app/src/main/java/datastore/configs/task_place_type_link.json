@@ -1,12 +1,12 @@
 {
-  "documentation": "Entity joining places and types many-to-many",
+  "documentation": "Entity joining tasks and place types many-to-many",
   "fields": [
     {
-      "name": "place_id",
+      "name": "task_id",
       "type": "Long",
       "nullable": false,
       "foreignKey": {
-        "table": "places",
+        "table": "tasks",
         "onDelete": "CASCADE"
       }
     },
@@ -23,7 +23,7 @@
   "constraints": [
     {
       "name": "rule_of_unique",
-      "definition": "UNIQUE (place_id, place_type_id) ON CONFLICT ROLLBACK"
+      "definition": "UNIQUE (task_id, place_type_id) ON CONFLICT ROLLBACK"
     }
   ]
 }

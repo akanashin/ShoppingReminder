@@ -5,10 +5,14 @@ import android.net.Uri;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 import datastore.generated.provider.places.PlacesContentValues;
+import datastore.generated.provider.places.PlacesCursor;
 import datastore.generated.provider.places.PlacesSelection;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkContentValues;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkCursor;
@@ -16,6 +20,7 @@ import datastore.generated.provider.placetypelink.PlaceTypeLinkSelection;
 import utils.Commons;
 import utils.datatypes.PlaceData;
 import utils.datatypes.PlaceType;
+import utils.datatypes.TaskData;
 
 /**
  * Created by akana_000 on 7/12/2015.
@@ -25,51 +30,56 @@ public class PlaceOps extends OpsInterface<PlaceData[], Void> {
     @Override
     protected PlaceData[] doQuery(ContentResolver cr, long uid) {
         Log.d(Commons.TAG, "PlaceType.doQuery(" + uid + ") called");
-        ArrayList<PlaceData> arr = new ArrayList<>();
+        ArrayList<PlaceData> places = new ArrayList<>();
 
-        PlaceTypeLinkSelection sel = new PlaceTypeLinkSelection();
-        if (uid != -1)
-            sel.placeId(uid);
+        // 1st: read all the places
+        {
+            PlacesSelection sel = new PlacesSelection();
+            if (uid != -1)
+                sel.id(uid);
 
-        PlaceTypeLinkCursor cursor = sel.query(cr);
-
-        while (cursor.moveToNext()) {
-            // first - read type of place
-            PlaceType placeType = new PlaceType(
-                    cursor.getPlaceTypeId(),
-                    cursor.getPlaceTypesNote(),
-                    cursor.getPlaceTypesColor());
-
-            // find object of PlaceData for which this type belongs
-            PlaceData placeData = null;
-            for (PlaceData p : arr)
-                if (p.id == cursor.getPlaceId())
-                    placeData = p;
-
-            if (placeData == null) {
-                placeData = new PlaceData(
-                        cursor.getPlaceId(),
-                        cursor.getPlacesName(),
-                        cursor.getPlacesLatitude(),
-                        cursor.getPlacesLongitude(),
-                        new ArrayList<PlaceType>()
-                );
-
-                arr.add(placeData);
+            PlacesCursor cursor = sel.query(cr);
+            while (cursor.moveToNext()) {
+                places.add(new PlaceData(
+                                cursor.getId(),
+                                cursor.getName(),
+                                cursor.getLatitude(),
+                                cursor.getLongitude(),
+                                new ArrayList<PlaceType>() ));
             }
+        }
 
-            placeData.types.add(placeType);
+        // 2nd: read types for places
+        {
+            for (PlaceData place : places) {
+                PlaceTypeLinkSelection sel = new PlaceTypeLinkSelection();
+                sel.placeId(place.id);
+
+                // ToDo: list of columns to query?
+                PlaceTypeLinkCursor cursor = sel.query(cr);
+
+                while (cursor.moveToNext()) {
+                    // first - read type of place
+                    PlaceType placeType = new PlaceType(
+                            cursor.getPlaceTypeId(),
+                            cursor.getPlaceTypesNote(),
+                            cursor.getPlaceTypesColor());
+
+                    // find object of PlaceData for which this type belongs
+                    place.types.add(placeType);
+                }
+            }
         }
 
         // sort resulting set by Name
-        Collections.sort(arr, new Comparator<PlaceData>() {
+        Collections.sort(places, new Comparator<PlaceData>() {
             @Override
             public int compare(PlaceData placeData, PlaceData t1) {
                 return placeData.name.compareTo(t1.name);
             }
         });
 
-        return arr.toArray(new PlaceData[0]);
+        return places.toArray(new PlaceData[places.size()]);
     }
 
     @Override
@@ -84,8 +94,8 @@ public class PlaceOps extends OpsInterface<PlaceData[], Void> {
                 throw new OpsException(OpsException.MSG_EMPTY_NAME);
 
             // 2nd: place nas ho types
-            if (place.types.isEmpty())
-                throw new OpsException(OpsException.MSG_EMPTY_LIST_OF_TYPES);
+            //if (place.types.isEmpty())
+            //    throw new OpsException(OpsException.MSG_EMPTY_LIST_OF_TYPES);
         }
 
         // Now: processing

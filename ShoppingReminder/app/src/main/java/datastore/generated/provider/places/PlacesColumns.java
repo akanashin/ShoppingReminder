@@ -11,6 +11,9 @@ import datastore.generated.provider.DataProvider;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkColumns;
 import datastore.generated.provider.placetypes.PlaceTypesColumns;
 import datastore.generated.provider.places.PlacesColumns;
+import datastore.generated.provider.taskplacelink.TaskPlaceLinkColumns;
+import datastore.generated.provider.taskplacetypelink.TaskPlaceTypeLinkColumns;
+import datastore.generated.provider.tasks.TasksColumns;
 
 /**
  * Places

@@ -51,8 +51,9 @@ public class PlaceType {
         // now we know that pt2 is not null
         //  compare this and pt2 field by field
         //  (ignoring ID)
-        return compare(name, ((PlaceType)pt2).name)
-                && compare(color, ((PlaceType) pt2).color);
+        PlaceType other = (PlaceType)pt2;
+        return compare(name, other.name)
+                && compare(color, other.color);
     }
 
 }

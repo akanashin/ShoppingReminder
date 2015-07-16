@@ -1,0 +1,23 @@
+{
+  "documentation": "Tasks. Can be attached to place type (linked through task_place_type table) or to place (linked through task_place table). Has expiration date",
+  "fields": [
+    {
+      "documentation": "Short name of task",
+      "name": "shortname",
+      "type": "String",
+      "nullable": false
+    },
+    {
+      "documentation": "DateTime when notify about this task",
+      "name": "expiration",
+      "type": "String",
+      "nullable": true
+    },
+    {
+      "documentation": "Remark",
+      "name": "remark",
+      "type": "String",
+      "nullable": true
+    }
+  ]
+}

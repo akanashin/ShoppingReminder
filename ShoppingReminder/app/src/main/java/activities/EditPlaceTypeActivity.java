@@ -86,9 +86,10 @@ public class EditPlaceTypeActivity extends GenericActivity<Operations> {
 
             mNameEditor.setText(name);
 
-            // set color
-            mPlaceType.color = intent.getIntExtra(INTENT_ID_COLOR, -1);
-            if (mPlaceType.color == -1)
+            // Nb: all colors will have negative values (they have 0xFF in higher byte)
+            //  so it's better to check them against positive value
+            mPlaceType.color = intent.getIntExtra(INTENT_ID_COLOR, 1);
+            if (mPlaceType.color == 1)
                 throw new AssertionError("No Color was bundled into Intent!");
 
             // these data only needed for filling statistics data

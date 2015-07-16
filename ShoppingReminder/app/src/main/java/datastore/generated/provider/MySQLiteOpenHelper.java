@@ -17,6 +17,9 @@ import home.akanashin.shoppingreminder.BuildConfig;
 import datastore.generated.provider.placetypelink.PlaceTypeLinkColumns;
 import datastore.generated.provider.placetypes.PlaceTypesColumns;
 import datastore.generated.provider.places.PlacesColumns;
+import datastore.generated.provider.taskplacelink.TaskPlaceLinkColumns;
+import datastore.generated.provider.taskplacetypelink.TaskPlaceTypeLinkColumns;
+import datastore.generated.provider.tasks.TasksColumns;
 
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = MySQLiteOpenHelper.class.getSimpleName();
@@ -35,7 +38,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
             + PlaceTypeLinkColumns.PLACE_TYPE_ID + " INTEGER NOT NULL "
             + ", CONSTRAINT fk_place_id FOREIGN KEY (" + PlaceTypeLinkColumns.PLACE_ID + ") REFERENCES places (_id) ON DELETE CASCADE"
             + ", CONSTRAINT fk_place_type_id FOREIGN KEY (" + PlaceTypeLinkColumns.PLACE_TYPE_ID + ") REFERENCES place_types (_id) ON DELETE CASCADE"
-            + ", CONSTRAINT unique_place_type UNIQUE (place_id, place_type_id) ON CONFLICT REPLACE"
+            + ", CONSTRAINT rule_of_unique UNIQUE (place_id, place_type_id) ON CONFLICT ROLLBACK"
             + " );";
 
     public static final String SQL_CREATE_TABLE_PLACE_TYPES = "CREATE TABLE IF NOT EXISTS "
@@ -53,6 +56,34 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
             + PlacesColumns.LATITUDE + " REAL NOT NULL, "
             + PlacesColumns.LONGITUDE + " REAL NOT NULL "
             + ", CONSTRAINT unique_name UNIQUE (name) ON CONFLICT ROLLBACK"
+            + " );";
+
+    public static final String SQL_CREATE_TABLE_TASK_PLACE_LINK = "CREATE TABLE IF NOT EXISTS "
+            + TaskPlaceLinkColumns.TABLE_NAME + " ( "
+            + TaskPlaceLinkColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + TaskPlaceLinkColumns.TASK_ID + " INTEGER NOT NULL, "
+            + TaskPlaceLinkColumns.PLACE_ID + " INTEGER NOT NULL "
+            + ", CONSTRAINT fk_task_id FOREIGN KEY (" + TaskPlaceLinkColumns.TASK_ID + ") REFERENCES tasks (_id) ON DELETE CASCADE"
+            + ", CONSTRAINT fk_place_id FOREIGN KEY (" + TaskPlaceLinkColumns.PLACE_ID + ") REFERENCES places (_id) ON DELETE CASCADE"
+            + ", CONSTRAINT rule_of_unique UNIQUE (task_id, place_id) ON CONFLICT ROLLBACK"
+            + " );";
+
+    public static final String SQL_CREATE_TABLE_TASK_PLACE_TYPE_LINK = "CREATE TABLE IF NOT EXISTS "
+            + TaskPlaceTypeLinkColumns.TABLE_NAME + " ( "
+            + TaskPlaceTypeLinkColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + TaskPlaceTypeLinkColumns.TASK_ID + " INTEGER NOT NULL, "
+            + TaskPlaceTypeLinkColumns.PLACE_TYPE_ID + " INTEGER NOT NULL "
+            + ", CONSTRAINT fk_task_id FOREIGN KEY (" + TaskPlaceTypeLinkColumns.TASK_ID + ") REFERENCES tasks (_id) ON DELETE CASCADE"
+            + ", CONSTRAINT fk_place_type_id FOREIGN KEY (" + TaskPlaceTypeLinkColumns.PLACE_TYPE_ID + ") REFERENCES place_types (_id) ON DELETE CASCADE"
+            + ", CONSTRAINT rule_of_unique UNIQUE (task_id, place_type_id) ON CONFLICT ROLLBACK"
+            + " );";
+
+    public static final String SQL_CREATE_TABLE_TASKS = "CREATE TABLE IF NOT EXISTS "
+            + TasksColumns.TABLE_NAME + " ( "
+            + TasksColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + TasksColumns.SHORTNAME + " TEXT NOT NULL, "
+            + TasksColumns.EXPIRATION + " TEXT, "
+            + TasksColumns.REMARK + " TEXT "
             + " );";
 
     // @formatter:on
@@ -112,6 +143,9 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_TABLE_PLACE_TYPE_LINK);
         db.execSQL(SQL_CREATE_TABLE_PLACE_TYPES);
         db.execSQL(SQL_CREATE_TABLE_PLACES);
+        db.execSQL(SQL_CREATE_TABLE_TASK_PLACE_LINK);
+        db.execSQL(SQL_CREATE_TABLE_TASK_PLACE_TYPE_LINK);
+        db.execSQL(SQL_CREATE_TABLE_TASKS);
         mOpenHelperCallbacks.onPostCreate(mContext, db);
     }
 
