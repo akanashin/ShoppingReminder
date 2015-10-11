@@ -10,7 +10,7 @@ import home.akanashin.shoppingreminder.pages.About;
 import home.akanashin.shoppingreminder.pages.MapWithTasks;
 import home.akanashin.shoppingreminder.pages.NewTask;
 import home.akanashin.shoppingreminder.pages.Settings;
-import home.akanashin.shoppingreminder.pages.Welcome;
+import home.akanashin.shoppingreminder.pages.Whatsaround;
 
 /**
  * Manager of pages in Navigation Drawer
@@ -48,9 +48,9 @@ public class PagesManager {
 
     public static void initialize(Context context) {
         mItems = new PageItem[] {
-                new PageItem( context.getString(R.string.pagelist_page_welcome),       Welcome.class),
-                new PageItem( context.getString(R.string.pagelist_page_nearest_tasks), MapWithTasks.class),
+                new PageItem( context.getString(R.string.pagelist_page_whatsaround),   Whatsaround.class),
                 new PageItem( context.getString(R.string.pagelist_page_new_task),      NewTask.class),
+                new PageItem( context.getString(R.string.pagelist_page_nearest_tasks), MapWithTasks.class),
                 new PageItem( context.getString(R.string.pagelist_page_settings),      Settings.class),
                 new PageItem( context.getString(R.string.pagelist_page_about),         About.class),
         };

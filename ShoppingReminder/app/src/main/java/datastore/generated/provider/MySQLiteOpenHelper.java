@@ -20,6 +20,7 @@ import datastore.generated.provider.places.PlacesColumns;
 import datastore.generated.provider.taskplacelink.TaskPlaceLinkColumns;
 import datastore.generated.provider.taskplacetypelink.TaskPlaceTypeLinkColumns;
 import datastore.generated.provider.tasks.TasksColumns;
+import datastore.generated.provider.tasksv2.TasksV2Columns;
 
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = MySQLiteOpenHelper.class.getSimpleName();
@@ -86,6 +87,12 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
             + TasksColumns.REMARK + " TEXT "
             + " );";
 
+    public static final String SQL_CREATE_TABLE_TASKS_V2 = "CREATE TABLE IF NOT EXISTS "
+            + TasksV2Columns.TABLE_NAME + " ( "
+            + TasksV2Columns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + TasksV2Columns.GSON + " TEXT NOT NULL "
+            + " );";
+
     // @formatter:on
 
     public static MySQLiteOpenHelper getInstance(Context context) {
@@ -146,6 +153,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_TABLE_TASK_PLACE_LINK);
         db.execSQL(SQL_CREATE_TABLE_TASK_PLACE_TYPE_LINK);
         db.execSQL(SQL_CREATE_TABLE_TASKS);
+        db.execSQL(SQL_CREATE_TABLE_TASKS_V2);
         mOpenHelperCallbacks.onPostCreate(mContext, db);
     }
 

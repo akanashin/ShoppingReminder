@@ -22,6 +22,7 @@ import datastore.generated.provider.places.PlacesColumns;
 import datastore.generated.provider.taskplacelink.TaskPlaceLinkColumns;
 import datastore.generated.provider.taskplacetypelink.TaskPlaceTypeLinkColumns;
 import datastore.generated.provider.tasks.TasksColumns;
+import datastore.generated.provider.tasksv2.TasksV2Columns;
 
 public class DataProvider extends BaseContentProvider {
     private static final String TAG = DataProvider.class.getSimpleName();
@@ -52,6 +53,9 @@ public class DataProvider extends BaseContentProvider {
     private static final int URI_TYPE_TASKS = 10;
     private static final int URI_TYPE_TASKS_ID = 11;
 
+    private static final int URI_TYPE_TASKS_V2 = 12;
+    private static final int URI_TYPE_TASKS_V2_ID = 13;
+
 
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
@@ -69,6 +73,8 @@ public class DataProvider extends BaseContentProvider {
         URI_MATCHER.addURI(AUTHORITY, TaskPlaceTypeLinkColumns.TABLE_NAME + "/#", URI_TYPE_TASK_PLACE_TYPE_LINK_ID);
         URI_MATCHER.addURI(AUTHORITY, TasksColumns.TABLE_NAME, URI_TYPE_TASKS);
         URI_MATCHER.addURI(AUTHORITY, TasksColumns.TABLE_NAME + "/#", URI_TYPE_TASKS_ID);
+        URI_MATCHER.addURI(AUTHORITY, TasksV2Columns.TABLE_NAME, URI_TYPE_TASKS_V2);
+        URI_MATCHER.addURI(AUTHORITY, TasksV2Columns.TABLE_NAME + "/#", URI_TYPE_TASKS_V2_ID);
     }
 
     @Override
@@ -114,6 +120,11 @@ public class DataProvider extends BaseContentProvider {
                 return TYPE_CURSOR_DIR + TasksColumns.TABLE_NAME;
             case URI_TYPE_TASKS_ID:
                 return TYPE_CURSOR_ITEM + TasksColumns.TABLE_NAME;
+
+            case URI_TYPE_TASKS_V2:
+                return TYPE_CURSOR_DIR + TasksV2Columns.TABLE_NAME;
+            case URI_TYPE_TASKS_V2_ID:
+                return TYPE_CURSOR_ITEM + TasksV2Columns.TABLE_NAME;
 
         }
         return null;
@@ -223,6 +234,14 @@ public class DataProvider extends BaseContentProvider {
                 res.orderBy = TasksColumns.DEFAULT_ORDER;
                 break;
 
+            case URI_TYPE_TASKS_V2:
+            case URI_TYPE_TASKS_V2_ID:
+                res.table = TasksV2Columns.TABLE_NAME;
+                res.idColumn = TasksV2Columns._ID;
+                res.tablesWithJoins = TasksV2Columns.TABLE_NAME;
+                res.orderBy = TasksV2Columns.DEFAULT_ORDER;
+                break;
+
             default:
                 throw new IllegalArgumentException("The uri '" + uri + "' is not supported by this ContentProvider");
         }
@@ -234,6 +253,7 @@ public class DataProvider extends BaseContentProvider {
             case URI_TYPE_TASK_PLACE_LINK_ID:
             case URI_TYPE_TASK_PLACE_TYPE_LINK_ID:
             case URI_TYPE_TASKS_ID:
+            case URI_TYPE_TASKS_V2_ID:
                 id = uri.getLastPathSegment();
         }
         if (id != null) {

@@ -20,9 +20,9 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="pagelist_page_welcome">Welcome</string>
-    <string name="pagelist_page_nearest_tasks">Nearests tasks</string>
+    <string name="pagelist_page_whatsaround">Look around</string>
     <string name="pagelist_page_new_task">New task</string>
+    <string name="pagelist_page_nearest_tasks">Nearests tasks</string>
     <string name="pagelist_page_settings">Settings</string>
     <string name="pagelist_page_about">About</string>
 

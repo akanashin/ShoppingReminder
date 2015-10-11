@@ -1,0 +1,11 @@
+{
+  "documentation": "Tasks (v2). Can be attached to place type or to place. Has expiration date",
+  "fields": [
+    {
+      "documentation": "JSON of serialized data",
+      "name": "gson",
+      "type": "String",
+      "nullable": false
+    }
+  ]
+}

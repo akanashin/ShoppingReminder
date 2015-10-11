@@ -40,6 +40,7 @@ public class PlacementFragment extends android.support.v4.app.Fragment {
     //  only one type is allowed
     private boolean[] mLocationsMask;
 
+    private View mView;
     private Spinner mPlacementSpinner;
     private ListView mList;
 
@@ -84,9 +85,12 @@ public class PlacementFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_new_task_placement, container, false);
+        if (mView != null)
+            return mView;
 
-        mList = (ListView) v.findViewById(R.id.lvPlacement);
+        mView = inflater.inflate(R.layout.activity_new_task_placement, container, false);
+
+        mList = (ListView) mView.findViewById(R.id.lvPlacement);
         mList.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
@@ -100,7 +104,7 @@ public class PlacementFragment extends android.support.v4.app.Fragment {
                 }
         );
 
-        mPlacementSpinner = ((Spinner)v.findViewById(R.id.spPlacement));
+        mPlacementSpinner = ((Spinner)mView.findViewById(R.id.spPlacement));
         mPlacementSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -114,7 +118,14 @@ public class PlacementFragment extends android.support.v4.app.Fragment {
         });
         mPlacementSpinner.setSelection(0);
 
-        return v;
+        return mView;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        updateGlobalData(mPlacementSpinner.getSelectedItemPosition());
     }
 
     private void setupListContent(int locType) {
@@ -129,6 +140,28 @@ public class PlacementFragment extends android.support.v4.app.Fragment {
         mLocationsMask = new boolean[names.size()];
 
         mList.setAdapter(new Adapter(mList.getContext(), R.layout.list_item_check_place, names));
+    }
+
+    private void updateGlobalData(int index) {
+        List<Long> ids = new ArrayList<>();
+        for(int i = 0; i < mLocationsMask.length; i++)
+            if (mLocationsMask[i])
+                ids.add( (index == 0) ? mPlaces[i].id : mPlaceTypes[i].id );
+
+        switch (index) {
+            case 0: //place
+                mNewTask.placement.place_types = null;
+                mNewTask.placement.places = new Long[ids.size()];
+                ids.toArray(mNewTask.placement.places);
+            break;
+            case 1: //place types
+                mNewTask.placement.places = null;
+                mNewTask.placement.place_types = new Long[ids.size()];
+                ids.toArray(mNewTask.placement.place_types);
+            break;
+            default:
+                throw new RuntimeException("Internal error: invalid index " + index);
+        }
     }
 
     /**

@@ -11,7 +11,7 @@ import home.akanashin.shoppingreminder.R;
 /**
  * Created by akana_000 on 8/16/2015.
  */
-public class Welcome extends Fragment {
+public class Whatsaround extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

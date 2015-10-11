@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import datastore.generated.provider.places.PlacesSelection;
 import datastore.generated.provider.placetypes.PlaceTypesSelection;
 import datastore.generated.provider.tasks.TasksSelection;
+import datastore.generated.provider.tasksv2.TasksV2Selection;
 import home.akanashin.shoppingreminder.utils.Commons;
 import home.akanashin.shoppingreminder.utils.async_stuff.AsyncOpCallback;
 import home.akanashin.shoppingreminder.utils.async_stuff.ConfigurableOps;
@@ -26,10 +27,13 @@ public class Operations {
     private PlaceTypeOps mPlaceTypeOps;
     private PlaceOps     mPlaceOps;
 
+    private TaskOpsv2      mTaskOpsv2;
+
     public Operations() {
         mPlaceTypeOps = new PlaceTypeOps();
         mPlaceOps = new PlaceOps();
         mTaskOps = new TaskOps();
+        mTaskOpsv2 = new TaskOpsv2();
     }
 
     /*
@@ -45,6 +49,9 @@ public class Operations {
 
     public TaskOps task() {
         return mTaskOps;
+    }
+    public TaskOpsv2 taskv2() {
+        return mTaskOpsv2;
     }
 
     /**
@@ -63,6 +70,9 @@ public class Operations {
                 // 3nd: clear tasks
                 new TasksSelection().delete(cr);
 
+                // 4th: clear tasks (v2)
+                new TasksV2Selection().delete(cr);
+
                 return null;
             }
         }.run();
@@ -75,25 +85,51 @@ public class Operations {
         // initial structure
         // Nb: all these need to have fixed IDs
         final PlaceType[] mTypes = new PlaceType[]{
-                new PlaceType("Blue", 0xFF0000FF),
-                new PlaceType("Green", 0xFF00FF00),
-                new PlaceType("Red", 0xFFFF0000),
+                new PlaceType("School",      0xFF0000FF),
+                new PlaceType("Food shop",   0xFF00FF00),
+                new PlaceType("Home care",   0xFFFF0000),
+                new PlaceType("Library",     0xFFFFFF00),
+                new PlaceType("Sport goods", 0xFF00FFFF),
+                new PlaceType("Окей",        0xFF70FFFF),
         };
 
         final PlaceData[] mPlaces = new PlaceData[]{
-                new PlaceData("home", 1.0, 1.0,
-                        new ArrayList<PlaceType>() {{
-                            add(mTypes[0]);
-                            add(mTypes[2]);
-                        }}),
-                new PlaceData("office", 0.5, 0.5,
+                new PlaceData("home", 59.73057, 30.564674,
+                        new ArrayList<PlaceType>() {{}}),
+
+                new PlaceData("Школа", 59.722935, 30.564836,
                         new ArrayList<PlaceType>() {{
                             add(mTypes[0]);
                         }}),
 
-                new PlaceData("shop", 1.5, 0.5,
+                new PlaceData("100% вкуса", 59.730157, 30.565222,
                         new ArrayList<PlaceType>() {{
                             add(mTypes[1]);
+                            add(mTypes[2]);
+                        }}),
+
+                new PlaceData("Окей Трудящихся 12", 59.737183, 30.572005,
+                        new ArrayList<PlaceType>() {{
+                            add(mTypes[1]);
+                            add(mTypes[2]);
+                            add(mTypes[4]);
+                            add(mTypes[5]);
+                        }}),
+
+                new PlaceData("Окей Тверская 36", 59.740266, 30.611288,
+                        new ArrayList<PlaceType>() {{
+                            add(mTypes[1]);
+                            add(mTypes[2]);
+                            add(mTypes[4]);
+                            add(mTypes[5]);
+                        }}),
+
+                new PlaceData("Окей Октябрьская 8", 59.738983, 30.622903,
+                        new ArrayList<PlaceType>() {{
+                            add(mTypes[1]);
+                            add(mTypes[2]);
+                            add(mTypes[4]);
+                            add(mTypes[5]);
                         }})
         };
 

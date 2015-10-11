@@ -18,12 +18,16 @@ public class TaskDatav2 {
     public Expiration  expiration;
     public Placement   placement;
 
+    // here we check that all data is valid and not empty
+    public boolean validate() {
+        return true;
+    }
 
     // one of fields
     public static class Description {
         public enum Type {
             Photo, Text, Voice
-        };
+        }
 
         public Type        dType;
         public String      text;
@@ -43,7 +47,7 @@ public class TaskDatav2 {
 
     // one of
     public static class Placement {
-        public int[] places;
-        public int[] place_types;
+        public Long[] places;
+        public Long[] place_types;
     }
 }
