@@ -13,14 +13,20 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <!-- there are used for creating description for tasks -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- uses-permission android:name="android.permission.RECORD_AUDIO" / -->
+
+    <uses-feature android:name="android.hardware.camera" />
+
     <application
-        android:name="utils.MyApp"
+        android:name=".utils.MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat" >
         <activity
-            android:name="activities.MainActivity"
+            android:name=".FrontActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,7 +43,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="activities.ShowPlacesActivity"
+            android:name=".activities.ShowPlacesActivity"
             android:label="@string/title_activity_main2" >
         </activity>
 
@@ -48,16 +54,8 @@
             android:exported="false" />
 
         <activity
-            android:name="activities.ListPlaceTypesActivity"
-            android:label="@string/title_activity_list_place_types" >
-        </activity>
-        <activity
-            android:name="activities.EditPlaceTypeActivity"
-            android:label="@string/title_activity_edit_place_type" >
-        </activity>
-        <activity
-            android:name="activities.EditPlaceActivity"
-            android:label="@string/title_activity_edit_place" >
+            android:name=".activities.newtask.NewTaskActivity"
+            android:windowSoftInputMode="adjustResize" >
         </activity>
     </application>
 

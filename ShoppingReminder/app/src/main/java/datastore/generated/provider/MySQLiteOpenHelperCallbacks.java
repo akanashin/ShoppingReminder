@@ -14,7 +14,7 @@ import home.akanashin.shoppingreminder.BuildConfig;
 /**
  * Implement your custom database creation or upgrade code here.
  *
- * This file will not be overwritten if you re-run the content provider generator.
+ * This file will not be overwritten if you re-doStuff the content provider generator.
  */
 public class MySQLiteOpenHelperCallbacks {
     private static final String TAG = MySQLiteOpenHelperCallbacks.class.getSimpleName();

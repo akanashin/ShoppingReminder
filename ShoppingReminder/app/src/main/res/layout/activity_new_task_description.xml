@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <Space
+        android:layout_width="20px"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Task description"
+        android:id="@+id/textView5"
+        android:gravity="center" />
+
+    <Space
+        android:layout_width="20px"
+        android:layout_height="60px" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6"
+        android:background="@drawable/view_border"
+        android:id="@+id/container">
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="20px"
+        android:layout_height="20px" />
+
+</LinearLayout>

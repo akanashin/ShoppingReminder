@@ -7,16 +7,16 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 import home.akanashin.shoppingreminder.test.utils.Utils;
-import operations.Operations;
-import operations.OpsException;
-import operations.PlaceOps;
-import utils.CommandSyncer;
-import utils.datatypes.PlaceData;
-import utils.datatypes.PlaceType;
-import utils.datatypes.Result;
+import home.akanashin.shoppingreminder.operations.Operations;
+import home.akanashin.shoppingreminder.operations.OpsException;
+import home.akanashin.shoppingreminder.operations.PlaceOps;
+import home.akanashin.shoppingreminder.utils.CommandSyncer;
+import home.akanashin.shoppingreminder.utils.datatypes.PlaceData;
+import home.akanashin.shoppingreminder.utils.datatypes.PlaceType;
+import home.akanashin.shoppingreminder.utils.datatypes.Result;
 
 /**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing of database operations with PlaceType</a>
+ * <a href="http://d.android.com/tools/testing/testing_android.html">Testing of database home.akanashin.shoppingreminder.operations with PlaceType</a>
  */
 public class DatabasePlaceTest extends AndroidTestCase {
     // initial structure
@@ -51,7 +51,6 @@ public class DatabasePlaceTest extends AndroidTestCase {
         super.setUp();
 
         mOps = new Operations();
-        mOps.onConfiguration(true); // initialization of operations
 
         mUtils = new Utils<>(mOps.place());
     }

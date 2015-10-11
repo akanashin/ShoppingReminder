@@ -3,13 +3,13 @@ package home.akanashin.shoppingreminder.test;
 import android.test.AndroidTestCase;
 
 import home.akanashin.shoppingreminder.test.utils.Utils;
-import operations.Operations;
-import operations.OpsException;
-import operations.PlaceTypeOps;
-import utils.datatypes.PlaceType;
+import home.akanashin.shoppingreminder.operations.Operations;
+import home.akanashin.shoppingreminder.operations.OpsException;
+import home.akanashin.shoppingreminder.operations.PlaceTypeOps;
+import home.akanashin.shoppingreminder.utils.datatypes.PlaceType;
 
 /**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing of database operations with PlaceType</a>
+ * <a href="http://d.android.com/tools/testing/testing_android.html">Testing of database home.akanashin.shoppingreminder.operations with PlaceType</a>
  */
 public class DatabasePlaceTypeTest extends AndroidTestCase {
     private PlaceType[] mTypes = new PlaceType[]{
@@ -26,7 +26,6 @@ public class DatabasePlaceTypeTest extends AndroidTestCase {
         super.setUp();
 
         mOps = new Operations();
-        mOps.onConfiguration(true); // initialization of operations
 
         mUtils = new Utils<>(mOps.placeType());
     }

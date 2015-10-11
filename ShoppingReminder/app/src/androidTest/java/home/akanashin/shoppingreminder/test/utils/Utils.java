@@ -1,9 +1,9 @@
 package home.akanashin.shoppingreminder.test.utils;
 
-import operations.Operations;
-import operations.OpsInterface;
-import utils.CommandSyncer;
-import utils.datatypes.Result;
+import home.akanashin.shoppingreminder.operations.Operations;
+import home.akanashin.shoppingreminder.operations.OpsInterface;
+import home.akanashin.shoppingreminder.utils.CommandSyncer;
+import home.akanashin.shoppingreminder.utils.datatypes.Result;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;

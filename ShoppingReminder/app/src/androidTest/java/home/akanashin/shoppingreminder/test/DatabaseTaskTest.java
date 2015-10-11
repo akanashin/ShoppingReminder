@@ -2,24 +2,21 @@ package home.akanashin.shoppingreminder.test;
 
 import android.test.AndroidTestCase;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import home.akanashin.shoppingreminder.test.utils.Utils;
-import operations.Operations;
-import operations.OpsException;
-import operations.TaskOps;
-import utils.CommandSyncer;
-import utils.datatypes.PlaceData;
-import utils.datatypes.PlaceType;
-import utils.datatypes.Result;
-import utils.datatypes.TaskData;
-
-import static utils.Utils.compare;
+import home.akanashin.shoppingreminder.operations.Operations;
+import home.akanashin.shoppingreminder.operations.OpsException;
+import home.akanashin.shoppingreminder.operations.TaskOps;
+import home.akanashin.shoppingreminder.utils.CommandSyncer;
+import home.akanashin.shoppingreminder.utils.datatypes.PlaceData;
+import home.akanashin.shoppingreminder.utils.datatypes.PlaceType;
+import home.akanashin.shoppingreminder.utils.datatypes.Result;
+import home.akanashin.shoppingreminder.utils.datatypes.TaskData;
 
 /**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing of database operations with PlaceType</a>
+ * <a href="http://d.android.com/tools/testing/testing_android.html">Testing of database home.akanashin.shoppingreminder.operations with PlaceType</a>
  */
 public class DatabaseTaskTest extends AndroidTestCase {
     // initial structure
@@ -51,7 +48,7 @@ public class DatabaseTaskTest extends AndroidTestCase {
                     new ArrayList<PlaceData>() {{ add(mPlaces[2]); }}),
 
             new TaskData("Sell", "never", "SMALL REMARK",
-                    new ArrayList<PlaceType>() {{ add(mTypes[0]); }},
+                    new ArrayList<PlaceType>() {{ add(mTypes[0]); add(mTypes[1]); }},
                     null),
 
             new TaskData("Take", "never", "BIG REMARK",
@@ -67,7 +64,6 @@ public class DatabaseTaskTest extends AndroidTestCase {
         super.setUp();
 
         mOps = new Operations();
-        mOps.onConfiguration(true); // initialization of operations
 
         mUtils = new Utils<>(mOps.task());
     }
@@ -131,38 +127,43 @@ public class DatabaseTaskTest extends AndroidTestCase {
      */
     public void testModify() {
         prepare();
-/*
+
         // 1st: fill database
-        mUtils.checkedInsertOrModify(mPlaces.length, "", mPlaces);
+        mUtils.checkedInsertOrModify(mTasks.length, "", mTasks);
 
         // 2nd: query database
-        PlaceData[] data = mUtils.checkedQuery();
-        assertEquals(data.length, mPlaces.length);
+        TaskData[] data = mUtils.checkedQuery();
 
-        assertTrue(data.length > 2); // i will change 2 elements
-        assertTrue(data[0].types.size() >= 1); // i will delete one placeType and add another
+        // Tasks have only part of data
+        assertTrue(Arrays.equals(mTasks, data));
 
-        // 3rd: change some of places
-        data[0].types.remove(0);      // remove 1st placetype (result should be 2)
-        data[0].types.add(mTypes[1]); // add element index 1 (result 2,1)
+        // 3rd: change some task
+        // i will change task with N = index
+        int index = 1;
+        assertTrue(data.length > index);
+        assertTrue(data[index].types != null);
+        assertTrue(data[index].types.size() >= 2);
 
-        data[1].name = data[1].name + " changed";
-        data[1].loc  = new LatLng(data[1].loc.latitude, -5);
+        data[index].types.remove(0);      // remove 1st placetype (result should be 2)
+        data[index].types.add(mTypes[2]); // add element index 1 (result 2,1)
+
+        data[index].name = data[index].name + " changed";
 
         // 4rd: write modified values to database
-        mUtils.checkedInsertOrModify(2, "", new PlaceData[] {data[0], data[1]});
+        mUtils.checkedInsertOrModify(1, "", new TaskData[]{data[index]});
 
-        // 5th: requery new data from database
-        PlaceData[] newdata = mUtils.checkedQuery();
-        assertEquals(data.length, newdata.length);
+        TaskData[] newdata = mUtils.checkedQuery();
+        assertTrue(Arrays.equals(data, newdata));
 
-        // 6th: validate
-        for (int i = 0; i < newdata.length; i++) {
-            assertFalse(newdata[i] == null);
+        // detach all the types and attach place
+        assertTrue(mPlaces.length >= 1);
+        data[index].types = null;
+        data[index].places = new ArrayList<PlaceData>() {{ add(mPlaces[1]); }};
 
-            assertTrue(data[i].equals(newdata[i]));
-        }
-        */
+        mUtils.checkedInsertOrModify(1, "", new TaskData[]{data[index]});
+
+        newdata = mUtils.checkedQuery();
+        assertTrue(Arrays.equals(data, newdata));
     }
 
     /**
