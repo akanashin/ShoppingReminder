@@ -22,33 +22,20 @@ import home.akanashin.shoppingreminder.pages.NewTask;
 import home.akanashin.shoppingreminder.utils.datatypes.TaskDatav2;
 
 public class NewTaskActivity extends FragmentActivity {
-    private static final int CAMERA_REQUEST = 1001;
-
-    public static final String SOURCE = "SOURCE";
-
     public TaskDatav2 mNewTask = new TaskDatav2();
 
     private ViewPager mPager;
     private static final Integer NUM_ITEMS = 3;
     private Integer mCurrentPage = 1;
 
-    public DataListener mDescriptionReceiver;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_task);
 
-        // here we get intent with indicator how to get description for new task
-        Intent intent = getIntent();
-
         // creating task object
-        mNewTask.description = new TaskDatav2.Description();
         mNewTask.placement   = new TaskDatav2.Placement();
         mNewTask.expiration  = new TaskDatav2.Expiration();
-        mNewTask.expiration.notification = new TaskDatav2.Expiration.Notification();
-
-        mNewTask.description.dType = (TaskDatav2.Description.Type)intent.getSerializableExtra(SOURCE);
 
         // set up the activity
         mPager = (ViewPager)findViewById(R.id.pager);
@@ -93,37 +80,19 @@ public class NewTaskActivity extends FragmentActivity {
                     mPager.setCurrentItem(mPager.getCurrentItem() + 1, true);
                 else {
                     // ask and save new task, then exit
-                    Toast.makeText(NewTaskActivity.this, mNewTask.description.text, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewTaskActivity.this, mNewTask.description, Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
         // skip first page when photo or voice is chosen
-        if (mNewTask.description.dType != TaskDatav2.Description.Type.Text)
-            mPager.setCurrentItem(mCurrentPage);
-        else {
-            // open description page and activate text editor
-            mPager.setCurrentItem(mCurrentPage = 0);
-        }
-    }
-
-    public void enterDescription(TaskDatav2.Description.Type source, final boolean stopIfCancel) {
-        switch (source) {
-            case Voice:
-                break;
-            case Photo:
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                //intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-                startActivityForResult(intent, CAMERA_REQUEST);
-                break;
-            default:
-                throw new RuntimeException("Incorrect value of SOURCE " + source);
-        }
+        mPager.setCurrentItem(mCurrentPage = 0);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch(requestCode) {
+            /*
             case CAMERA_REQUEST:
                 try {
                     if (resultCode == RESULT_OK) {
@@ -149,6 +118,7 @@ public class NewTaskActivity extends FragmentActivity {
                     finish();
 
                 break;
+                */
             default:
                 throw new RuntimeException("Unknown request code " + requestCode);
         }

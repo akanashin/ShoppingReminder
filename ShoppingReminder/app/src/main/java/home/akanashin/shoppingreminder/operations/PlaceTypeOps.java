@@ -32,6 +32,7 @@ public class PlaceTypeOps extends OpsInterface<PlaceType[], PlaceType.Usage> {
                     placeTypeCursor.getNote(),
                     placeTypeCursor.getColor()));
         }
+        placeTypeCursor.close();
 
         return result.toArray(new PlaceType[result.size()]);
     }

@@ -23,16 +23,18 @@ public class NewTask extends Fragment {
         View v = inflater.inflate(R.layout.page_new_task, container, false);
 
         // set proper handlers for the buttons
-        v.findViewById(R.id.btnPhoto).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callNextActivity(TaskDatav2.Description.Type.Photo);
-            }
-        });
         v.findViewById(R.id.btnText).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callNextActivity(TaskDatav2.Description.Type.Text);
+                Intent intent = new Intent(NewTask.this.getActivity(), NewTaskActivity.class);
+                startActivity(intent);
+            }
+        });
+        v.findViewById(R.id.btnPhoto).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //callNextActivity(NewTaskActivity.Source.Voice);
+                Toast.makeText(getActivity(), "not implemented", Toast.LENGTH_SHORT).show();
             }
         });
         v.findViewById(R.id.btnVoice).setOnClickListener(new View.OnClickListener() {
@@ -44,12 +46,5 @@ public class NewTask extends Fragment {
         });
 
         return v;
-    }
-
-    private void callNextActivity(TaskDatav2.Description.Type mode) {
-        Intent intent = new Intent(this.getActivity(), NewTaskActivity.class);
-        intent.putExtra(NewTaskActivity.SOURCE, mode);
-
-        startActivity(intent);
     }
 }

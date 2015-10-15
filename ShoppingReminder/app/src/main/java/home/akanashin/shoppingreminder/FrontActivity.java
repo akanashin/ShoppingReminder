@@ -83,7 +83,7 @@ public class FrontActivity extends AppCompatActivity
         actionBar.setTitle(mTitle);
     }
 
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
@@ -111,4 +111,5 @@ public class FrontActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+    */
 }

@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import home.akanashin.shoppingreminder.R;
 import home.akanashin.shoppingreminder.operations.Operations;
+import home.akanashin.shoppingreminder.operations.OpsException;
 import home.akanashin.shoppingreminder.utils.async_stuff.AsyncOpCallback;
 
 /**
@@ -25,12 +26,13 @@ public class About extends Fragment {
             @Override
             public void onClick(View v) {
                 Operations ops = new Operations();
-                ops.initDB(new AsyncOpCallback() {
-                    @Override
-                    public void doStuff(Object param) {
-                        Toast.makeText(About.this.getActivity(), "Database ready", Toast.LENGTH_LONG).show();
-                    }
-                });
+                try {
+                    ops.initDB();
+                    Toast.makeText(About.this.getActivity(), "Database ready", Toast.LENGTH_LONG).show();
+                } catch (OpsException e) {
+                    e.printStackTrace();
+                    Toast.makeText(About.this.getActivity(), "Something bad happened", Toast.LENGTH_LONG).show();
+                }
             }
         });
         return v;

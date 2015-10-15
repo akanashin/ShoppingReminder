@@ -151,13 +151,11 @@ public class PlacementFragment extends android.support.v4.app.Fragment {
         switch (index) {
             case 0: //place
                 mNewTask.placement.place_types = null;
-                mNewTask.placement.places = new Long[ids.size()];
-                ids.toArray(mNewTask.placement.places);
+                mNewTask.placement.places = ids;
             break;
             case 1: //place types
                 mNewTask.placement.places = null;
-                mNewTask.placement.place_types = new Long[ids.size()];
-                ids.toArray(mNewTask.placement.place_types);
+                mNewTask.placement.place_types = ids;
             break;
             default:
                 throw new RuntimeException("Internal error: invalid index " + index);

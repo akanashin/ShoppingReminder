@@ -43,6 +43,7 @@ public class PlaceOps extends OpsInterface<PlaceData[], Void> {
                                 cursor.getLongitude(),
                                 new ArrayList<PlaceType>() ));
             }
+            cursor.close();
         }
 
         // 2nd: read types for places

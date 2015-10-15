@@ -1,8 +1,8 @@
 package home.akanashin.shoppingreminder.operations;
 
 import android.content.ContentResolver;
-import android.os.AsyncTask;
-import android.util.Log;
+
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 
@@ -10,13 +10,12 @@ import datastore.generated.provider.places.PlacesSelection;
 import datastore.generated.provider.placetypes.PlaceTypesSelection;
 import datastore.generated.provider.tasks.TasksSelection;
 import datastore.generated.provider.tasksv2.TasksV2Selection;
-import home.akanashin.shoppingreminder.utils.Commons;
 import home.akanashin.shoppingreminder.utils.async_stuff.AsyncOpCallback;
-import home.akanashin.shoppingreminder.utils.async_stuff.ConfigurableOps;
 import home.akanashin.shoppingreminder.utils.async_stuff.DatabaseOperation;
 import home.akanashin.shoppingreminder.utils.datatypes.PlaceData;
 import home.akanashin.shoppingreminder.utils.datatypes.PlaceType;
 import home.akanashin.shoppingreminder.utils.datatypes.Result;
+import home.akanashin.shoppingreminder.utils.datatypes.TaskDatav2;
 
 /**
  * Created by akana_000 on 6/19/2015.
@@ -81,7 +80,12 @@ public class Operations {
     /**
      * Creater if 'demo' database
      */
-    public void initDB(final AsyncOpCallback cb) {
+    public void initDB() throws OpsException {
+        // clean the database
+        place().deleteSync(-1);
+        placeType().deleteSync(-1);
+        taskv2().deleteSync(-1);
+
         // initial structure
         // Nb: all these need to have fixed IDs
         final PlaceType[] mTypes = new PlaceType[]{
@@ -92,6 +96,32 @@ public class Operations {
                 new PlaceType("Sport goods", 0xFF00FFFF),
                 new PlaceType("Окей",        0xFF70FFFF),
         };
+
+        // write place types and re-query it to get proper IDs
+        placeType().addOrModifySync(mTypes);
+
+        PlaceType[] newTypes;
+        try {
+            newTypes = placeType().queryListSync();
+        } catch (OpsException e) {
+            throw new AssertionError(e.getMessage());
+        }
+        if (newTypes == null)
+            throw new AssertionError("Error: cannot read place types from database!");
+
+        // fix IDs of place types in array of places
+        for (PlaceType pt : mTypes) {
+            // set ID based on name
+            long id = -1;
+            for (PlaceType placeType : newTypes)
+                if (placeType.name.equals(pt.name))
+                    id = placeType.id;
+
+            if (id == -1)
+                throw new AssertionError("Error: cannot find placetype with name " + pt.name);
+
+            pt.id = id;
+        }
 
         final PlaceData[] mPlaces = new PlaceData[]{
                 new PlaceData("home", 59.73057, 30.564674,
@@ -130,52 +160,52 @@ public class Operations {
                             add(mTypes[2]);
                             add(mTypes[4]);
                             add(mTypes[5]);
-                        }})
+                        }}),
+
+                new PlaceData("Офис", 59.925173, 30.386341,
+                        new ArrayList<PlaceType>() {{}}),
         };
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                // clean the database
-                place().deleteSync(-1);
-                placeType().deleteSync(-1);
+        // write places to database
+        place().addOrModifySync(mPlaces);
 
-                // write place types and re-query it to get proper IDs
-                placeType().addOrModifySync(mTypes);
+        PlaceData[] newplaces = place().queryListSync();
+        for (PlaceData p : mPlaces) {
+            // set ID based on name
+            long id = -1;
+            for (PlaceData place : newplaces)
+                if (place.name.equals(p.name))
+                    id = place.id;
 
-                PlaceType[] newTypes;
-                try {
-                    newTypes = placeType().queryListSync();
-                } catch (OpsException e) {
-                    throw new AssertionError(e.getMessage());
-                }
-                if(newTypes == null)
-                    throw new AssertionError("Error: cannot read place types from database!");
+            if (id == -1)
+                throw new AssertionError("Error: cannot find placetype with name " + p.name);
 
-                // fix IDs of place types in array of places
-                for (PlaceType pt : mTypes) {
-                    // set ID based on name
-                    long id = -1;
-                    for (PlaceType placeType : newTypes)
-                        if (placeType.name.equals(pt.name))
-                            id = placeType.id;
+            p.id = id;
+        }
 
-                    if (id == -1)
-                        throw new AssertionError("Error: cannot find placetype with name " + pt.name);
+        final TaskDatav2[] mTasks = new TaskDatav2[]{
+                new TaskDatav2()
+                        .setDescription("Купить пива")
+                        .attachPlace(mPlaces[2].id, false) // "100% вкуса"
+                        .setExpirationDate(DateTime.now()) // now
+                        .setEnabled(true),
+                new TaskDatav2()
+                        .setDescription("Принести домой книгу")
+                        .attachPlace(mPlaces[6].id, false) // "Офис"
+                        .setExpirationDate(DateTime.now().plusDays(1)) // tomorrow
+                        .setEnabled(true),
+                new TaskDatav2()
+                        .setDescription("Купить (огромный список покупок)")
+                        .attachPlaceType(mTypes[5].id, false) // группа "Окей"
+                        .setExpirationDate(new DateTime(2015, 10, 19, 00, 00, 01))
+                        .setEnabled(true),
+                new TaskDatav2()
+                        .setDescription("Сотворить что-нибудь странное")
+                        .setExpirationDate(new DateTime(2015, 10, 18, 00, 00, 01)) // New Year!
+                        .setEnabled(true),
+        };
 
-                    pt.id = id;
-                }
-
-                // write places to database
-                place().addOrModifySync(mPlaces);
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void p) {
-                cb.doStuff(null);
-            }
-        }.execute((Void[]) null);
+        // write tasks to database
+        taskv2().addOrModifySync(mTasks);
     }
 }

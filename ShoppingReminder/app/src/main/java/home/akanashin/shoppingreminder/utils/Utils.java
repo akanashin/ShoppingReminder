@@ -2,6 +2,9 @@ package home.akanashin.shoppingreminder.utils;
 
 import android.widget.Toast;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 /**
  * Created by akana_000 on 6/27/2015.
  */
@@ -10,6 +13,12 @@ public class Utils {
         Toast.makeText(MyApp.getContext(), text, Toast.LENGTH_LONG).show();
     }
 
+    public static class DateUtil
+    {
+        public static DateTime toLocal(DateTime utc) {
+            return utc.withZone(DateTimeZone.forOffsetHours(+3));
+        }
+    }
     /**
      * Comparator of two objects with protection from 'the same object' and 'one of them is null'
      * @param obj1

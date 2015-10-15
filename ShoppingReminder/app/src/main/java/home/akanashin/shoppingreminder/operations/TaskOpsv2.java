@@ -25,17 +25,18 @@ public class TaskOpsv2 extends OpsInterface<TaskDatav2[], Void> {
         Log.d(Commons.TAG, "TaskOpsv2.doQuery(" + uid + ") called");
         ArrayList<TaskDatav2> tasks = new ArrayList<>();
 
-            TasksV2Selection sel = new TasksV2Selection();
-            if (uid != -1)
-                sel.id(uid);
+        TasksV2Selection sel = new TasksV2Selection();
+        if (uid != -1)
+            sel.id(uid);
 
-            TasksV2Cursor cursor = sel.query(cr);
-            while(cursor.moveToNext()) {
-                TaskDatav2 task = new Gson().fromJson(cursor.getGson(), TaskDatav2.class);
-                task.id = cursor.getId(); // fix Id of task (it is empty when task is first time added)
+        TasksV2Cursor cursor = sel.query(cr);
+        while (cursor.moveToNext()) {
+            TaskDatav2 task = new Gson().fromJson(cursor.getGson(), TaskDatav2.class);
+            task.id = cursor.getId(); // fix Id of task (it is empty when task is first time added)
 
-                tasks.add(task);
-            }
+            tasks.add(task);
+        }
+        cursor.close();
 
         return tasks.toArray(new TaskDatav2[tasks.size()]);
     }
