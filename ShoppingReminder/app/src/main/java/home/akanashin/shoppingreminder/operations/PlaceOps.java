@@ -41,12 +41,12 @@ public class PlaceOps extends OpsInterface<PlaceData[], Void> {
                                 cursor.getName(),
                                 cursor.getLatitude(),
                                 cursor.getLongitude(),
-                                new ArrayList<PlaceType>() ));
+                                new ArrayList<Long>() ));
             }
             cursor.close();
         }
 
-        // 2nd: read types for places
+        // 2nd: read typeIds for places
         {
             for (PlaceData place : places) {
                 PlaceTypeLinkSelection sel = new PlaceTypeLinkSelection();
@@ -63,7 +63,7 @@ public class PlaceOps extends OpsInterface<PlaceData[], Void> {
                             cursor.getPlaceTypesColor());
 
                     // find object of PlaceData for which this type belongs
-                    place.types.add(placeType);
+                    place.typeIds.add(placeType.id);
                 }
             }
         }
@@ -90,8 +90,8 @@ public class PlaceOps extends OpsInterface<PlaceData[], Void> {
                     || place.name.trim().isEmpty())
                 throw new OpsException(OpsException.MSG_EMPTY_NAME);
 
-            // 2nd: place nas ho types
-            //if (place.types.isEmpty())
+            // 2nd: place nas ho typeIds
+            //if (place.typeIds.isEmpty())
             //    throw new OpsException(OpsException.MSG_EMPTY_LIST_OF_TYPES);
         }
 
@@ -126,8 +126,8 @@ public class PlaceOps extends OpsInterface<PlaceData[], Void> {
                         !cur[0].loc.equals(place.loc))
                     place_cv.update(cr, new PlacesSelection().id(place.id));
 
-                // 4th: do i need to update types?
-                if (!cur[0].types.equals(place.types)) {
+                // 4th: do i need to update typeIds?
+                if (!cur[0].typeIds.equals(place.typeIds)) {
                     // delete old PlaceTypeLink records (i will recreate them later)
                     PlaceTypeLinkSelection sel = new PlaceTypeLinkSelection();
                     sel.placeId(place.id).delete(cr);
@@ -138,11 +138,11 @@ public class PlaceOps extends OpsInterface<PlaceData[], Void> {
 
             // now update PlaceTypeLink table (create all the records)
             if (needToWriteLinks)
-                for (PlaceType pt : place.types) {
+                for (Long id : place.typeIds) {
                     PlaceTypeLinkContentValues cv = new PlaceTypeLinkContentValues();
 
                     cv.putPlaceId(place.id);
-                    cv.putPlaceTypeId(pt.id);
+                    cv.putPlaceTypeId(id);
                     cv.insert(cr);
                 }
         }

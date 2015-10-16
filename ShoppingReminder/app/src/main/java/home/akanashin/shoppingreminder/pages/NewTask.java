@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import home.akanashin.shoppingreminder.R;
 import home.akanashin.shoppingreminder.activities.newtask.NewTaskActivity;
-import home.akanashin.shoppingreminder.utils.datatypes.TaskDatav2;
 
 /**
  * Launcher for NewTaskActivity

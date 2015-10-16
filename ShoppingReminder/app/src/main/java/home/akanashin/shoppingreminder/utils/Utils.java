@@ -18,7 +18,12 @@ public class Utils {
         public static DateTime toLocal(DateTime utc) {
             return utc.withZone(DateTimeZone.forOffsetHours(+3));
         }
+
+        public static String toString(Long millis) {
+            return Utils.DateUtil.toLocal(new DateTime(millis)).toString("d-M-x H:m:s");
+        }
     }
+
     /**
      * Comparator of two objects with protection from 'the same object' and 'one of them is null'
      * @param obj1

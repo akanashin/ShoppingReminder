@@ -8,10 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import home.akanashin.shoppingreminder.R;
-import home.akanashin.shoppingreminder.utils.datatypes.TaskDatav2;
+import home.akanashin.shoppingreminder.utils.datatypes.TaskData;
 
 /**
  * Created by akana_000 on 10/11/2015.
@@ -20,7 +19,7 @@ import home.akanashin.shoppingreminder.utils.datatypes.TaskDatav2;
 public class DescriptionFragment extends android.support.v4.app.Fragment
 {
     private NewTaskActivity mParentActivity;
-    private TaskDatav2 mNewTask;
+    private TaskData mNewTask;
 
     private View mView;
 

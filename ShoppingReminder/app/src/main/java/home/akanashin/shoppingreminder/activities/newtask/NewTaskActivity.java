@@ -2,9 +2,7 @@ package home.akanashin.shoppingreminder.activities.newtask;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -15,14 +13,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.io.IOException;
-
 import home.akanashin.shoppingreminder.R;
-import home.akanashin.shoppingreminder.pages.NewTask;
-import home.akanashin.shoppingreminder.utils.datatypes.TaskDatav2;
+import home.akanashin.shoppingreminder.utils.datatypes.TaskData;
 
 public class NewTaskActivity extends FragmentActivity {
-    public TaskDatav2 mNewTask = new TaskDatav2();
+    public TaskData mNewTask = new TaskData();
 
     private ViewPager mPager;
     private static final Integer NUM_ITEMS = 3;
@@ -34,8 +29,8 @@ public class NewTaskActivity extends FragmentActivity {
         setContentView(R.layout.activity_new_task);
 
         // creating task object
-        mNewTask.placement   = new TaskDatav2.Placement();
-        mNewTask.expiration  = new TaskDatav2.Expiration();
+        mNewTask.placement   = new TaskData.Placement();
+        mNewTask.expiration  = new TaskData.Expiration();
 
         // set up the activity
         mPager = (ViewPager)findViewById(R.id.pager);

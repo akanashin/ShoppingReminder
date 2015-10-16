@@ -29,6 +29,14 @@ public class PlaceType {
         color = aColor;
     }
 
+    public static PlaceType findById(PlaceType[] collection, long id) {
+        for (PlaceType placeType : collection)
+            if (placeType.id == id)
+                return placeType;
+
+        return null;
+    }
+
     /**
      * Comparator of two placeType objects
      * (i don't compare IDs here)

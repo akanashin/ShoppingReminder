@@ -15,7 +15,7 @@ import home.akanashin.shoppingreminder.utils.async_stuff.DatabaseOperation;
 import home.akanashin.shoppingreminder.utils.datatypes.PlaceData;
 import home.akanashin.shoppingreminder.utils.datatypes.PlaceType;
 import home.akanashin.shoppingreminder.utils.datatypes.Result;
-import home.akanashin.shoppingreminder.utils.datatypes.TaskDatav2;
+import home.akanashin.shoppingreminder.utils.datatypes.TaskData;
 
 /**
  * Created by akana_000 on 6/19/2015.
@@ -26,13 +26,10 @@ public class Operations {
     private PlaceTypeOps mPlaceTypeOps;
     private PlaceOps     mPlaceOps;
 
-    private TaskOpsv2      mTaskOpsv2;
-
     public Operations() {
         mPlaceTypeOps = new PlaceTypeOps();
         mPlaceOps = new PlaceOps();
         mTaskOps = new TaskOps();
-        mTaskOpsv2 = new TaskOpsv2();
     }
 
     /*
@@ -49,9 +46,6 @@ public class Operations {
     public TaskOps task() {
         return mTaskOps;
     }
-    public TaskOpsv2 taskv2() {
-        return mTaskOpsv2;
-    }
 
     /**
      * Clearer of database
@@ -60,7 +54,7 @@ public class Operations {
         new DatabaseOperation<Result<Integer>>(cb) {
             @Override
             public Result<Integer> doOperation(ContentResolver cr) {
-                // 1st: clear place-types
+                // 1st: clear place-typeIds
                 new PlaceTypesSelection().delete(cr);
 
                 // 2nd: clear places
@@ -84,7 +78,7 @@ public class Operations {
         // clean the database
         place().deleteSync(-1);
         placeType().deleteSync(-1);
-        taskv2().deleteSync(-1);
+        task().deleteSync(-1);
 
         // initial structure
         // Nb: all these need to have fixed IDs
@@ -97,7 +91,7 @@ public class Operations {
                 new PlaceType("Окей",        0xFF70FFFF),
         };
 
-        // write place types and re-query it to get proper IDs
+        // write place typeIds and re-query it to get proper IDs
         placeType().addOrModifySync(mTypes);
 
         PlaceType[] newTypes;
@@ -107,9 +101,9 @@ public class Operations {
             throw new AssertionError(e.getMessage());
         }
         if (newTypes == null)
-            throw new AssertionError("Error: cannot read place types from database!");
+            throw new AssertionError("Error: cannot read place typeIds from database!");
 
-        // fix IDs of place types in array of places
+        // fix IDs of place typeIds in array of places
         for (PlaceType pt : mTypes) {
             // set ID based on name
             long id = -1;
@@ -124,46 +118,44 @@ public class Operations {
         }
 
         final PlaceData[] mPlaces = new PlaceData[]{
-                new PlaceData("home", 59.73057, 30.564674,
-                        new ArrayList<PlaceType>() {{}}),
+                new PlaceData("home", 59.73057, 30.564674),
 
                 new PlaceData("Школа", 59.722935, 30.564836,
-                        new ArrayList<PlaceType>() {{
-                            add(mTypes[0]);
+                        new ArrayList<Long>() {{
+                            add(mTypes[0].id);
                         }}),
 
                 new PlaceData("100% вкуса", 59.730157, 30.565222,
-                        new ArrayList<PlaceType>() {{
-                            add(mTypes[1]);
-                            add(mTypes[2]);
+                        new ArrayList<Long>() {{
+                            add(mTypes[1].id);
+                            add(mTypes[2].id);
                         }}),
 
                 new PlaceData("Окей Трудящихся 12", 59.737183, 30.572005,
-                        new ArrayList<PlaceType>() {{
-                            add(mTypes[1]);
-                            add(mTypes[2]);
-                            add(mTypes[4]);
-                            add(mTypes[5]);
+                        new ArrayList<Long>() {{
+                            add(mTypes[1].id);
+                            add(mTypes[2].id);
+                            add(mTypes[4].id);
+                            add(mTypes[5].id);
                         }}),
 
                 new PlaceData("Окей Тверская 36", 59.740266, 30.611288,
-                        new ArrayList<PlaceType>() {{
-                            add(mTypes[1]);
-                            add(mTypes[2]);
-                            add(mTypes[4]);
-                            add(mTypes[5]);
+                        new ArrayList<Long>() {{
+                            add(mTypes[1].id);
+                            add(mTypes[2].id);
+                            add(mTypes[4].id);
+                            add(mTypes[5].id);
                         }}),
 
                 new PlaceData("Окей Октябрьская 8", 59.738983, 30.622903,
-                        new ArrayList<PlaceType>() {{
-                            add(mTypes[1]);
-                            add(mTypes[2]);
-                            add(mTypes[4]);
-                            add(mTypes[5]);
+                        new ArrayList<Long>() {{
+                            add(mTypes[1].id);
+                            add(mTypes[2].id);
+                            add(mTypes[4].id);
+                            add(mTypes[5].id);
                         }}),
 
-                new PlaceData("Офис", 59.925173, 30.386341,
-                        new ArrayList<PlaceType>() {{}}),
+                new PlaceData("Офис", 59.925173, 30.386341),
         };
 
         // write places to database
@@ -183,29 +175,29 @@ public class Operations {
             p.id = id;
         }
 
-        final TaskDatav2[] mTasks = new TaskDatav2[]{
-                new TaskDatav2()
+        final TaskData[] mTasks = new TaskData[]{
+                new TaskData()
                         .setDescription("Купить пива")
                         .attachPlace(mPlaces[2].id, false) // "100% вкуса"
                         .setExpirationDate(DateTime.now()) // now
                         .setEnabled(true),
-                new TaskDatav2()
+                new TaskData()
                         .setDescription("Принести домой книгу")
                         .attachPlace(mPlaces[6].id, false) // "Офис"
                         .setExpirationDate(DateTime.now().plusDays(1)) // tomorrow
                         .setEnabled(true),
-                new TaskDatav2()
+                new TaskData()
                         .setDescription("Купить (огромный список покупок)")
                         .attachPlaceType(mTypes[5].id, false) // группа "Окей"
                         .setExpirationDate(new DateTime(2015, 10, 19, 00, 00, 01))
                         .setEnabled(true),
-                new TaskDatav2()
+                new TaskData()
                         .setDescription("Сотворить что-нибудь странное")
                         .setExpirationDate(new DateTime(2015, 10, 18, 00, 00, 01)) // New Year!
                         .setEnabled(true),
         };
 
         // write tasks to database
-        taskv2().addOrModifySync(mTasks);
+        task().addOrModifySync(mTasks);
     }
 }

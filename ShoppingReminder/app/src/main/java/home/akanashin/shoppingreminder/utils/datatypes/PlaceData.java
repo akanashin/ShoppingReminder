@@ -14,31 +14,46 @@ public class PlaceData {
     public LatLng      loc;
     public String      name;
 
-    // array of types for this place
-    public ArrayList<PlaceType> types;
+    // array of typeIds for this place
+    public ArrayList<Long> typeIds;
 
     /*
-     *  Checks whether this type is one of types for current place
+     *  Checks whether this type is one of typeIds for current place
      */
-    public Boolean isOneOfTypes(PlaceType placeType) {
-        for(PlaceType p: types)
-            if (p.id == placeType.id)
+    public Boolean isOneOfTypes(Long ptId) {
+        for(Long id : typeIds)
+            if (id == ptId)
                 return true;
 
         return false;
     }
 
-    public PlaceData(String aName, Double aLat, Double aLong, ArrayList<PlaceType> aTypes) {
+    public PlaceData(String aName, Double aLat, Double aLong) {
         id    = 0; // this constructor always creates new object which does not have database ID
         name  = aName;
         loc   = new LatLng(aLat, aLong);
-        types = aTypes;
+        typeIds = new ArrayList<>();
     }
-    public PlaceData(long aId, String aName, Double aLat, Double aLong, ArrayList<PlaceType> aTypes) {
+    public PlaceData(String aName, Double aLat, Double aLong, ArrayList<Long> aTypes) {
+        id    = 0; // this constructor always creates new object which does not have database ID
+        name  = aName;
+        loc   = new LatLng(aLat, aLong);
+        typeIds = aTypes;
+    }
+    public PlaceData(long aId, String aName, Double aLat, Double aLong, ArrayList<Long> aTypes) {
         id    = aId;
         name  = aName;
         loc   = new LatLng(aLat, aLong);
-        types = aTypes;
+        typeIds = aTypes;
+    }
+
+
+    public static PlaceData findById(PlaceData[] collection, long id) {
+        for (PlaceData placeData : collection)
+            if (placeData.id == id)
+                return placeData;
+
+        return null;
     }
 
     /**
@@ -57,7 +72,7 @@ public class PlaceData {
           || !compare(name,other.name) )
             return false;
 
-        // check types
-        return types.equals(other.types);
+        // check typeIds
+        return typeIds.equals(other.typeIds);
     }
 }

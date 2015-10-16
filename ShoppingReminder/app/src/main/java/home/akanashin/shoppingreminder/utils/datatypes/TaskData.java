@@ -1,92 +1,109 @@
 package home.akanashin.shoppingreminder.utils.datatypes;
 
-import java.util.ArrayList;
+import android.graphics.Bitmap;
 
-import static home.akanashin.shoppingreminder.utils.Utils.compare;
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *  Data structure to
+ * Data structure to
  */
 public class TaskData {
-    public long        id;
-    public String      name;
-    public String      remark;     // remark for this task
+    public long id;
 
-    public String      expiration; // expiration data (if present)
+    public String description;
+    public Bitmap[] images;
+    public Expiration expiration;
+    public Placement placement;
+    public Boolean enabled;
 
-    // Can be used only one property at a time
-    // array of place types for this task
-    public ArrayList<PlaceType> types;
+    public TaskData() {}
 
-    // array of places for this task
-    public ArrayList<PlaceData> places;
-
-    public TaskData(String aName, String aExpiration, String aRemark,
-                    ArrayList<PlaceType> aTypes, ArrayList<PlaceData> aPlaces) {
-        id    = 0; // this constructor always creates new object which does not have database ID
-        name  = aName;
-        expiration = aExpiration;
-        remark  = aRemark;
-
-        if ((aTypes != null && !aTypes.isEmpty())
-                && (aPlaces != null && !aPlaces.isEmpty()))
-            throw new AssertionError("Either types or places must be empty");
-
-        types  = aTypes;
-        places = aPlaces;
-    }
-    public TaskData(long aId,
-                    String aName, String aExpiration, String aRemark,
-                    ArrayList<PlaceType> aTypes, ArrayList<PlaceData> aPlaces) {
-        id    = aId;
-        name  = aName;
-        expiration = aExpiration;
-        remark = aRemark;
-
-        if ((aTypes != null && !aTypes.isEmpty())
-                && (aPlaces != null && !aPlaces.isEmpty()))
-            throw new AssertionError("Either types or places must be empty");
-
-        types  = aTypes;
-        places = aPlaces;
+    public TaskData setDescription(String text) {
+        description = text;
+        return this;
     }
 
-    /**
-     * Comparator of two TaskData objects
-     *  do not compare IDs
-     * @param object
-     * @return
-     */
-    public boolean equals(Object object) {
-        if(!(object instanceof TaskData))
-            throw new ClassCastException("Object is not TaskData");
+    public TaskData setExpirationDate(DateTime date) {
+        expiration = new Expiration();
+        expiration.date = date.getMillis();
+        return this;
+    }
 
-        // check location
-        TaskData other = (TaskData) object;
-        if ( !compare(name,other.name)
-                || !compare(expiration,other.expiration))
-            return false;
+    public TaskData attachPlaces(List<Long> placeDataIds, boolean clear) {
+        preparePlacement(true, clear);
 
-        // check types
-        if (types != null) {
-            if (!types.equals(other.types))
-                return false;
-        } else
-            if (other.types != null)
-                return false;
+        for (int i = 0; i < placeDataIds.size(); i++)
+            placement.places.add(placeDataIds.get(i));
 
-        // check places
-        if (places != null) {
-            // task only contains some data for place
-            for(int i = 0; i < places.size(); i++) {
-                if (places.get(i).id != other.places.get(i).id
-                    || !compare(places.get(i).name, other.places.get(i).name))
-                    return false;
-            }
-        } else
-        if (other.places != null)
-            return false;
+        return this;
+    }
 
+    public TaskData attachPlace(Long placeDataId, boolean clear) {
+        preparePlacement(true, clear);
+
+        placement.places.add(placeDataId);
+
+        return this;
+    }
+
+    public TaskData attachPlaceTypes(List<Long> placeTypeIds, boolean clear) {
+        preparePlacement(false, clear);
+
+        for (int i = 0; i < placeTypeIds.size(); i++)
+            placement.place_types.add(placeTypeIds.get(i));
+
+        return this;
+    }
+
+    public TaskData attachPlaceType(Long placeTypeId, boolean clear) {
+        preparePlacement(false, clear);
+
+        placement.place_types.add(placeTypeId);
+
+        return this;
+    }
+
+    public TaskData setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+
+        return this;
+    }
+
+    // here we check that all data is valid and not empty
+    public boolean validate() {
         return true;
     }
+
+    public static class Expiration {
+        public long date;
+    }
+
+    // one of
+    public static class Placement {
+        public List<Long> places;
+        public List<Long> place_types;
+    }
+
+    private void preparePlacement(boolean isPlace, boolean clear) {
+        if (placement == null) {
+            placement = new Placement();
+        } else {
+            if (isPlace)
+                placement.place_types = null;
+            else
+                placement.places = null;
+        }
+
+        if (isPlace) {
+            if (placement.places == null || clear)
+                placement.places = new ArrayList<>();
+        } else {
+            if (placement.place_types == null || clear)
+                placement.place_types = new ArrayList<>();
+        }
+    }
+
 }

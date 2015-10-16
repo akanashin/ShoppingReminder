@@ -22,7 +22,7 @@ import home.akanashin.shoppingreminder.operations.OpsException;
 import home.akanashin.shoppingreminder.utils.MyApp;
 import home.akanashin.shoppingreminder.utils.datatypes.PlaceData;
 import home.akanashin.shoppingreminder.utils.datatypes.PlaceType;
-import home.akanashin.shoppingreminder.utils.datatypes.TaskDatav2;
+import home.akanashin.shoppingreminder.utils.datatypes.TaskData;
 
 /**
  * Created by akana_000 on 10/11/2015.
@@ -30,13 +30,13 @@ import home.akanashin.shoppingreminder.utils.datatypes.TaskDatav2;
 // this fragment shows placement settings
 public class PlacementFragment extends android.support.v4.app.Fragment {
     private NewTaskActivity mParentActivity;
-    private TaskDatav2 mNewTask;
+    private TaskData mNewTask;
 
     // data from database
     private PlaceData[] mPlaces;
     private PlaceType[] mPlaceTypes;
 
-    // array of checked places or types of places for this task
+    // array of checked places or typeIds of places for this task
     //  only one type is allowed
     private boolean[] mLocationsMask;
 
@@ -66,7 +66,7 @@ public class PlacementFragment extends android.support.v4.app.Fragment {
             mPlaceTypes = ops.placeType().queryListSync();
 
             Log.i(MyApp.TAG, "loaded " + mPlaces.length + " places");
-            Log.i(MyApp.TAG, "loaded " + mPlaceTypes.length + " place types");
+            Log.i(MyApp.TAG, "loaded " + mPlaceTypes.length + " place typeIds");
 
         } catch (OpsException e) {
             e.printStackTrace();
@@ -153,7 +153,7 @@ public class PlacementFragment extends android.support.v4.app.Fragment {
                 mNewTask.placement.place_types = null;
                 mNewTask.placement.places = ids;
             break;
-            case 1: //place types
+            case 1: //place typeIds
                 mNewTask.placement.places = null;
                 mNewTask.placement.place_types = ids;
             break;

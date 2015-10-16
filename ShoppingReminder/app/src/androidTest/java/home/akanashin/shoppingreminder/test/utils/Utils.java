@@ -40,7 +40,7 @@ public class Utils <
     public DataType checkedQuery() {
         Result<DataType> result = queryFromDB();
 
-        // checking place types
+        // checking place typeIds
         assertFalse(result.result == null);
         assertTrue("".equals(result.message));
 

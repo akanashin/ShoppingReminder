@@ -15,7 +15,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -27,8 +26,8 @@ import home.akanashin.shoppingreminder.R;
 import home.akanashin.shoppingreminder.operations.Operations;
 import home.akanashin.shoppingreminder.operations.OpsException;
 import home.akanashin.shoppingreminder.utils.MyApp;
-import home.akanashin.shoppingreminder.utils.async_stuff.AsyncOpCallback;
 import home.akanashin.shoppingreminder.utils.datatypes.PlaceData;
+import home.akanashin.shoppingreminder.utils.datatypes.PlaceType;
 
 /**
  * My wrapper over Google Map widget
@@ -81,6 +80,7 @@ public class MapWithTasks extends MapFragment
 
                 try {
                     PlaceData[] placeData = mOps.place().queryListSync();
+                    PlaceType[] placeTypes = mOps.placeType().queryListSync();
 
                     Log.d(MyApp.TAG, "Received " + placeData.length + " records");
                     // add marker for every place we received
@@ -91,13 +91,17 @@ public class MapWithTasks extends MapFragment
                                 .draggable(true);
 
                         // set color for this marker
-                        if (place.types.size() == 1) {
+                        if (place.typeIds.size() == 1) {
                             // using color from PlaceType
+                            int color = 0;
+                            for (PlaceType pt : placeTypes)
+                                if (pt.id == place.typeIds.get(0))
+                                    color = pt.color;
 
                             Bitmap b1 = BitmapFactory.decodeResource(getResources(), R.drawable.ic_action_place);
                             Bitmap resultBitmap = Bitmap.createBitmap(b1, 0, 0, b1.getWidth() - 1, b1.getHeight() - 1);
                             Paint p = new Paint();
-                            ColorFilter filter = new LightingColorFilter(place.types.get(0).color, 1);
+                            ColorFilter filter = new LightingColorFilter(color, 1);
                             p.setColorFilter(filter);
 
                             Canvas canvas = new Canvas(resultBitmap);
@@ -105,10 +109,10 @@ public class MapWithTasks extends MapFragment
 
                             opts.icon(BitmapDescriptorFactory.fromBitmap(resultBitmap));
 
-                        } else if (place.types.size() > 1) { // many types
+                        } else if (place.typeIds.size() > 1) { // many typeIds
                             // or use special colored icon
                             opts.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_place_multi));
-                        } else // 0 types?
+                        } else // 0 typeIds?
                             opts.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_place));
 
                         // store PlaceData and Marker
