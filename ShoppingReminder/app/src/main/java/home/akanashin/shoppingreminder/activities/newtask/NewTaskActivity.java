@@ -26,7 +26,7 @@ public class NewTaskActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_task);
+        setContentView(R.layout.act_new_task);
 
         // creating task object
         mNewTask.placement   = new TaskData.Placement();

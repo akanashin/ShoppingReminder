@@ -31,5 +31,7 @@
         <item>Place type</item>
     </string-array>
 
-    <string name="action_example">Example action</string>
+    <string name="locations_are_disabled_opening_settings">Current location cannot be get. We are opening settings and You can check whether locations are enabled or not</string>
+    <string name="locations_are_disabled_header">Location</string>
+    <string name="splash_text">Loading...</string>
 </resources>

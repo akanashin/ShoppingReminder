@@ -51,7 +51,7 @@ public class DescriptionFragment extends android.support.v4.app.Fragment
         if (mView != null)
             return mView;
 
-        mView = inflater.inflate(R.layout.activity_new_task_description, container, false);
+        mView = inflater.inflate(R.layout.act_new_task_description, container, false);
         mView.findViewById(R.id.text).setOnFocusChangeListener(
                 new View.OnFocusChangeListener() {
                     @Override

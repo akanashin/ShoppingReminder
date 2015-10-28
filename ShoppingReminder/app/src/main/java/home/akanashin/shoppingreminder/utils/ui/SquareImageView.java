@@ -1,4 +1,4 @@
-package home.akanashin.shoppingreminder.utils;
+package home.akanashin.shoppingreminder.utils.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;

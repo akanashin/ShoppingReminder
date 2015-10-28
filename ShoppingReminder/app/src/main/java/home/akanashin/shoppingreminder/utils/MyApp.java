@@ -24,8 +24,8 @@ public class MyApp extends Application {
         return instance.getApplicationContext();
     }
 
-    public LocationRequester getLocationRequester() {
-        return mLocationRequester;
+    public static LocationRequester getLocationRequester() {
+        return instance.mLocationRequester;
     }
 
     @Override

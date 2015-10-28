@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * Entity joining places and types many-to-many
+ * Entity joining places and typeIds many-to-many
  */
 public interface PlaceTypeLinkModel extends BaseModel {
 

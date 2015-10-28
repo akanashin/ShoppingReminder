@@ -7,8 +7,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import home.akanashin.shoppingreminder.navdrawer.NavigationDrawerFragment;
 import home.akanashin.shoppingreminder.navdrawer.PagesManager;
@@ -34,7 +32,7 @@ public class FrontActivity extends AppCompatActivity
 
         PagesManager.initialize(this);
 
-        setContentView(R.layout.activity_front);
+        setContentView(R.layout.act_front);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -46,14 +44,16 @@ public class FrontActivity extends AppCompatActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         // Init location manager
-        MyApp.getInstance().getLocationRequester().connectToGoogleAPI(
+        MyApp.getLocationRequester().connectToGoogleAPI(
                 // once it is
                 new AsyncOpCallback<Boolean>() {
                     @Override
                     public void doStuff(Boolean param) {
+
+
                         Location loc = null;
                         if (param)
-                            loc = MyApp.getInstance().getLocationRequester().getCurrentLocation();
+                            loc = MyApp.getLocationRequester().getCurrentLocation();
 
                         // it CAN happen
                         if (loc != null)

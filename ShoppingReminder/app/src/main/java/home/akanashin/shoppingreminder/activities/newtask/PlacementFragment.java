@@ -88,7 +88,7 @@ public class PlacementFragment extends android.support.v4.app.Fragment {
         if (mView != null)
             return mView;
 
-        mView = inflater.inflate(R.layout.activity_new_task_placement, container, false);
+        mView = inflater.inflate(R.layout.act_new_task_placement, container, false);
 
         mList = (ListView) mView.findViewById(R.id.lvPlacement);
         mList.setOnItemClickListener(
@@ -139,7 +139,7 @@ public class PlacementFragment extends android.support.v4.app.Fragment {
 
         mLocationsMask = new boolean[names.size()];
 
-        mList.setAdapter(new Adapter(mList.getContext(), R.layout.list_item_check_place, names));
+        mList.setAdapter(new Adapter(mList.getContext(), R.layout.act_new_task_list_item_check_place, names));
     }
 
     private void updateGlobalData(int index) {

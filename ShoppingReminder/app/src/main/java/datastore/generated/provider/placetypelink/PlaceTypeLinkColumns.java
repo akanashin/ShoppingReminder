@@ -17,7 +17,7 @@ import datastore.generated.provider.tasks.TasksColumns;
 import datastore.generated.provider.tasksv2.TasksV2Columns;
 
 /**
- * Entity joining places and types many-to-many
+ * Entity joining places and typeIds many-to-many
  */
 public class PlaceTypeLinkColumns implements BaseColumns {
     public static final String TABLE_NAME = "place_type_link";

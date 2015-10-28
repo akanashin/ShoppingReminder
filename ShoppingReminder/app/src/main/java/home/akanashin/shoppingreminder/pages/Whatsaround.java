@@ -39,7 +39,7 @@ public class Whatsaround extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.whatsaround, container, false);
+        final View view = inflater.inflate(R.layout.act_whatsaround, container, false);
 
 
         setupListView(view);
@@ -159,7 +159,7 @@ public class Whatsaround extends Fragment {
 
                 case 1:
                     // grouping by distance
-                    Location myloc = MyApp.getInstance().getLocationRequester().getCurrentLocation();
+                    Location myloc = MyApp.getLocationRequester().getCurrentLocation();
 
                     // traverse all the tasks and find nearest place or one of places with the given type
                     class D {
@@ -358,7 +358,7 @@ public class Whatsaround extends Fragment {
         public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.main_hotlist_group, null);
+                convertView = inflater.inflate(R.layout.act_whatsaround_main_hotlist_group, null);
             }
 
             // show right arrow if group is closed and it contains children
@@ -378,7 +378,7 @@ public class Whatsaround extends Fragment {
         public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.main_hotlist_child, null);
+                convertView = inflater.inflate(R.layout.act_whatsaround_main_hotlist_child, null);
             }
 
             Group.Item item = mData[groupPosition].items.get(childPosition);

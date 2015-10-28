@@ -28,7 +28,7 @@ public class ExpirationFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_new_task_expiration, container, false);
+        View v = inflater.inflate(R.layout.act_new_task_expiration, container, false);
 /*
             // name and barcode of the item
             ((TextView)v.findViewById(R.id.tvName)).setText(mPriceData.product.name);
